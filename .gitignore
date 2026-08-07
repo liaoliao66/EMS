@@ -1,0 +1,27 @@
+# Cursor / IDE
+.cursor/
+agent-transcripts/
+mcps/
+terminals/
+skills-cursor/
+.vscode/
+
+# System
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build / temp
+node_modules/
+dist/
+.tmp/
+__pycache__/
+*.pyc
+
+# Local extract / temp artifacts
+资料/_prd_extract/
+资料/_prd.zip
+资料/_prd_text.txt
+prototype/versions/**/_fix_*
+prototype/versions/**/_tmp_*

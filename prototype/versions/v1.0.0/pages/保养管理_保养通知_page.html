@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>保养通知 · EMS v1.0.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="stylesheet" href="../assets/common.css" />
+</head>
+<body class="min-h-screen">
+  <div class="flex min-h-screen">
+    <aside class="sidebar sticky top-0 flex h-screen w-60 shrink-0 flex-col overflow-y-auto text-white">
+      <div class="border-b border-white/10 px-4 py-5">
+        <div class="text-xs text-slate-400">智能设备管理 EMS</div>
+        <div class="mt-1 text-base font-semibold">PC 业务端 · v1.0.0</div>
+      </div>
+      <nav class="flex-1 pb-6"><div class="nav-group px-4 pt-4 pb-1 text-[11px] uppercase">基础配置</div>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="基础配置_设备清单_page.html"><i class="fa-solid fa-list w-4 text-center opacity-80"></i><span>设备清单</span></a>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="基础配置_保养标准_page.html"><i class="fa-solid fa-clipboard-check w-4 text-center opacity-80"></i><span>保养标准</span></a>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="基础配置_点巡检标准_page.html"><i class="fa-solid fa-tasks w-4 text-center opacity-80"></i><span>点巡检标准</span></a>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="基础配置_参数配置_page.html"><i class="fa-solid fa-sliders w-4 text-center opacity-80"></i><span>参数配置</span></a>
+<div class="nav-group px-4 pt-4 pb-1 text-[11px] uppercase">设备运营</div>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="设备运营_运营设备_page.html"><i class="fa-solid fa-industry w-4 text-center opacity-80"></i><span>运营设备</span></a>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="设备运营_投保记录_page.html"><i class="fa-solid fa-shield-halved w-4 text-center opacity-80"></i><span>投保记录</span></a>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="设备运营_理赔记录_page.html"><i class="fa-solid fa-file-invoice-dollar w-4 text-center opacity-80"></i><span>理赔记录</span></a>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="设备运营_设备租赁_page.html"><i class="fa-solid fa-handshake w-4 text-center opacity-80"></i><span>设备租赁</span></a>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="设备运营_设备报废_page.html"><i class="fa-solid fa-recycle w-4 text-center opacity-80"></i><span>设备报废</span></a>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="设备运营_设备处置_page.html"><i class="fa-solid fa-box-archive w-4 text-center opacity-80"></i><span>设备处置</span></a>
+<div class="nav-group px-4 pt-4 pb-1 text-[11px] uppercase">点巡检管理</div>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="点巡检_点巡检区域_page.html"><i class="fa-solid fa-map-location-dot w-4 text-center opacity-80"></i><span>点巡检区域</span></a>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="点巡检_点巡检记录_page.html"><i class="fa-solid fa-clipboard-list w-4 text-center opacity-80"></i><span>点巡检记录</span></a>
+<div class="nav-group px-4 pt-4 pb-1 text-[11px] uppercase">保养管理</div>
+<a class="nav-link active mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="保养管理_保养通知_page.html"><i class="fa-solid fa-bell w-4 text-center opacity-80"></i><span>保养通知</span></a>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="保养管理_保养计划_page.html"><i class="fa-solid fa-calendar-check w-4 text-center opacity-80"></i><span>保养计划</span></a>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="保养管理_保养完工_page.html"><i class="fa-solid fa-flag-checkered w-4 text-center opacity-80"></i><span>保养完工</span></a>
+<div class="nav-group px-4 pt-4 pb-1 text-[11px] uppercase">设备维修</div>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="设备维修_故障通知_page.html"><i class="fa-solid fa-triangle-exclamation w-4 text-center opacity-80"></i><span>故障通知</span></a>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="设备维修_故障报修_page.html"><i class="fa-solid fa-wrench w-4 text-center opacity-80"></i><span>故障报修</span></a>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="设备维修_维修计划_page.html"><i class="fa-solid fa-calendar-days w-4 text-center opacity-80"></i><span>维修计划</span></a>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="设备维修_维修派工_page.html"><i class="fa-solid fa-user-gear w-4 text-center opacity-80"></i><span>维修派工</span></a>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="设备维修_维修完工_page.html"><i class="fa-solid fa-circle-check w-4 text-center opacity-80"></i><span>维修完工</span></a>
+<div class="nav-group px-4 pt-4 pb-1 text-[11px] uppercase">运行管理</div>
+<a class="nav-link  mx-2 mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-sm" href="运行管理_加油记录_page.html"><i class="fa-solid fa-gas-pump w-4 text-center opacity-80"></i><span>加油记录</span></a></nav>
+      <div class="border-t border-white/10 p-4 text-xs text-slate-400">
+        <a class="hover:text-white" href="../index.html">返回版本入口</a>
+      </div>
+    </aside>
+    <div class="flex min-w-0 flex-1 flex-col">
+      <header class="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
+          <div>
+            <div class="text-sm font-semibold text-slate-900">保养通知</div>
+            <div class="text-xs text-slate-500">业务功能原型 · 不含消息/审批/权限页</div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="hidden md:block">
+              <input class="input w-64" placeholder="业务内搜索编号/名称" />
+            </div>
+            <div class="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600">
+              <i class="fa-solid fa-user text-sm"></i>
+            </div>
+          </div>
+        </div>
+      </header>
+      <main class="flex-1 px-6 py-6">
+        <div class="mx-auto max-w-7xl">
+    <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <h1 class="text-xl font-bold text-slate-900">保养通知</h1>
+        <p class="mt-1 text-sm text-slate-500">业务汇总页（只读），非消息中心。</p>
+      </div>
+      <div class="flex flex-wrap gap-2"></div>
+    </div>
+    <div class="card-soft mb-4 p-4"><div class="grid grid-cols-1 gap-3 md:grid-cols-4"><div><label class="mb-1 block text-xs text-slate-500">搜索</label><input class="input" placeholder="运营设备编号/名称" /></div><div><label class="mb-1 block text-xs text-slate-500">通知日期</label><input class="input" placeholder="选择日期" /></div></div><div class="mt-3 flex gap-2"><button class="btn-brand px-4 py-2 text-sm" onclick="toast('已按条件筛选（原型）')">查询</button><button class="btn-ghost px-4 py-2 text-sm" onclick="toast('已重置')">重置</button></div></div>
+    <div class="card-soft overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[880px] text-left text-sm">
+          <thead class="bg-slate-50"><tr><th class="px-3 py-3 font-semibold text-slate-600">通知编号</th><th class="px-3 py-3 font-semibold text-slate-600">运营设备</th><th class="px-3 py-3 font-semibold text-slate-600">下次保养日期</th><th class="px-3 py-3 font-semibold text-slate-600">通知日期</th><th class="px-3 py-3 font-semibold text-slate-600">维保负责人</th><th class="px-3 py-3 font-semibold text-slate-600">操作</th></tr></thead>
+          <tbody><tr class="table-row border-t border-slate-100"><td class="px-3 py-3 text-slate-700">BN-20260805-01</td><td class="px-3 py-3 text-slate-700">OP-2026-001 / 1号门吊</td><td class="px-3 py-3 text-slate-700">2026-08-10</td><td class="px-3 py-3 text-slate-700">2026-08-05</td><td class="px-3 py-3 text-slate-700">王工</td><td class="px-3 py-3 text-slate-700"><div class="flex flex-wrap gap-2"><a class="text-teal-700 hover:underline" href="保养管理_保养通知_查看.html">查看</a></div></td></tr><tr class="table-row border-t border-slate-100"><td class="px-3 py-3 text-slate-700">BN-20260806-03</td><td class="px-3 py-3 text-slate-700">OP-2026-002 / 2号输送线</td><td class="px-3 py-3 text-slate-700">2026-08-12</td><td class="px-3 py-3 text-slate-700">2026-08-06</td><td class="px-3 py-3 text-slate-700">赵工</td><td class="px-3 py-3 text-slate-700"><div class="flex flex-wrap gap-2"><a class="text-teal-700 hover:underline" href="保养管理_保养通知_查看.html">查看</a></div></td></tr></tbody>
+        </table>
+      </div>
+      <div class="flex items-center justify-between border-t border-slate-100 px-4 py-3 text-sm text-slate-500">
+        <span>共 2 条</span>
+        <div class="flex gap-2">
+          <button class="btn-ghost px-3 py-1.5 text-xs">上一页</button>
+          <button class="btn-brand px-3 py-1.5 text-xs">1</button>
+          <button class="btn-ghost px-3 py-1.5 text-xs">下一页</button>
+        </div>
+      </div>
+    </div>
+    </div>
+      </main>
+    </div>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="../assets/common.js"></script>
+  <script></script>
+</body>
+</html>

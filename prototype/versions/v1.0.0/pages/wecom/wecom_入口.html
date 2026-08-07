@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>智能设备巡检 · 企微H5 · EMS v1.0.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+      line-height:1.6; margin:0; min-height:100vh;
+      background:linear-gradient(160deg,#e2e8f0 0%,#f8fafc 45%,#cbd5e1 100%);
+    }
+    .stage{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;}
+    .phone{
+      width:390px; height:844px; border-radius:48px; border:10px solid #e5e7eb;
+      background:#0f172a; box-shadow:0 24px 64px rgba(15,23,42,.22);
+      position:relative; overflow:hidden; flex-shrink:0;
+    }
+    .island{
+      position:absolute; top:12px; left:50%; transform:translateX(-50%);
+      width:120px; height:32px; border-radius:20px; background:#0f172a; z-index:30;
+    }
+    .phone-screen{
+      position:absolute; inset:0; margin:8px; border-radius:40px; overflow:hidden;
+      background:#f8fafc; display:flex; flex-direction:column;
+    }
+    .status-bar{
+      height:48px; padding:14px 20px 0; display:flex; justify-content:space-between;
+      align-items:flex-start; font-size:12px; font-weight:600; color:#0f172a; flex-shrink:0;
+    }
+    .nav-bar{
+      height:48px; display:flex; align-items:center; justify-content:space-between;
+      padding:0 16px; background:#fff; border-bottom:1px solid #e2e8f0; flex-shrink:0;
+    }
+    .content{flex:1; overflow-y:auto; padding:16px; -webkit-overflow-scrolling:touch;}
+    .content::-webkit-scrollbar{display:none;}
+    .home-bar{
+      height:22px; display:flex; align-items:center; justify-content:center;
+      background:#fff; flex-shrink:0;
+    }
+    .home-bar span{width:128px; height:5px; border-radius:999px; background:#cbd5e1;}
+    .btn{border-radius:1rem;}
+    .btn:active{transform:scale(0.95);}
+    .card{background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;box-shadow:0 4px 12px rgba(0,0,0,0.05);}
+    .toast{
+      position:absolute; left:50%; bottom:36px; transform:translateX(-50%) translateY(8px);
+      background:#0f172a;color:#fff;padding:10px 14px;border-radius:14px;font-size:13px;
+      opacity:0;transition:.2s;z-index:50; max-width:86%;
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .modal-mask{
+      position:absolute; inset:0; background:rgba(15,23,42,.45);
+      display:none; align-items:center; justify-content:center; padding:20px; z-index:40;
+    }
+    .modal-mask.show{display:flex;}
+    .hint{margin-top:14px; font-size:12px; color:#64748b; text-align:center;}
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone" aria-label="手机预览外壳">
+      <div class="island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span style="display:flex;gap:6px;align-items:center;">
+            <i class="fa-solid fa-signal"></i>
+            <i class="fa-solid fa-wifi"></i>
+            <i class="fa-solid fa-battery-full"></i>
+          </span>
+        </div>
+        <div class="nav-bar">
+          <span class="w-4"></span>
+          <div class="text-sm font-semibold text-slate-900">智能设备巡检</div>
+          <span class="w-4"></span>
+        </div>
+        <div class="content">
+<p class="mb-3 text-xs text-slate-500">企业微信工作台入口 · 无独立底部 Tab · 复用企微导航</p>
+<div class="card p-4">
+  <div class="text-base font-semibold text-slate-900">点巡检</div>
+  <p class="mt-1 text-sm text-slate-500">扫描巡检区域二维码，录入正常/异常结果。</p>
+  <div class="mt-4 grid grid-cols-2 gap-3">
+    <a href="wecom_扫码.html" class="btn flex items-center justify-center gap-2 bg-teal-700 px-3 py-3 text-sm text-white">扫码巡检</a>
+    <a href="wecom_记录列表.html" class="btn flex items-center justify-center border border-slate-200 bg-white px-3 py-3 text-sm text-slate-700">我的记录</a>
+  </div>
+</div>
+<div class="card mt-3 overflow-hidden">
+  <img class="h-36 w-full object-cover" src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&q=80" alt="现场设备" />
+  <div class="p-4 text-sm text-slate-600">支持正常/异常分支；异常须填写巡检内容并上传现场照片。</div>
+</div>
+<a class="mt-4 block text-center text-xs text-slate-400" href="../../index.html">返回版本入口</a>
+</div>
+        <div class="home-bar"><span></span></div>
+        <div id="toast" class="toast"></div>
+      </div>
+    </div>
+    <p class="hint">企微 H5 演示外壳（iPhone 16 · 390×844）· 无独立底部业务 Tab</p>
+  </div>
+  <script>
+    function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('show');clearTimeout(window.t);window.t=setTimeout(()=>el.classList.remove('show'),2000);}
+    function openModal(id){document.getElementById(id).classList.add('show');}
+    function closeModal(id){document.getElementById(id).classList.remove('show');}
+  </script>
+</body>
+</html>

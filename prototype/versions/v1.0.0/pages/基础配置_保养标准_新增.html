@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>新增 / 编辑保养标准 · 弹窗 · EMS v1.0.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="stylesheet" href="../assets/common.css" />
+</head>
+<body class="modal-page">
+  <div id="root" class="modal-page-panel">
+    <div class="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white px-5 py-3">
+      <div>
+        <div class="text-sm font-semibold text-slate-900">新增 / 编辑保养标准</div>
+        <div class="text-xs text-slate-500">弹窗 · 灯箱样式 · 不含审批/消息/权限</div>
+      </div>
+      <button type="button" class="lightbox-close static" onclick="closeModalOrBack('基础配置_保养标准_page.html')" aria-label="关闭">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="flex-1 overflow-auto px-5 py-4">
+    <div class="pb-2">
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2"><div><label class="mb-1 block text-xs text-slate-500">标准名称</label><input class="input" /></div><div><label class="mb-1 block text-xs text-slate-500">适用设备类型</label><select class="select" multiple><option>起重设备</option><option>输送设备</option></select></div><div class="md:col-span-2">
+      <div class="mb-2 flex items-center justify-between"><label class="text-xs text-slate-500">保养项目</label>
+      <button class="btn-ghost px-3 py-1 text-xs" onclick="toast('已添加一行项目')">添加项目</button></div>
+      <div class="overflow-hidden rounded-2xl border border-slate-200">
+        <table class="w-full text-sm"><thead class="bg-slate-50"><tr>
+          <th class="px-3 py-2 text-left">保养类别</th><th class="px-3 py-2 text-left">保养内容</th><th class="px-3 py-2">操作</th>
+        </tr></thead><tbody>
+          <tr class="border-t"><td class="px-3 py-2"><input class="input" value="润滑" /></td>
+          <td class="px-3 py-2"><input class="input" value="检查并补充润滑油" /></td>
+          <td class="px-3 py-2 text-center"><button class="text-slate-400" onclick="toast('至少保留一条完整项目')">删除</button></td></tr>
+        </tbody></table>
+      </div></div></div>
+      <p class="mt-4 text-xs text-slate-400">至少存在一条完整保养项目。</p>
+      <div class="mt-6 flex justify-end gap-2 border-t border-slate-100 pt-4">
+        <button type="button" class="btn-ghost px-4 py-2 text-sm" onclick="closeModalOrBack('基础配置_保养标准_page.html')">取消</button>
+        <button type="button" class="btn-brand px-4 py-2 text-sm" onclick="saveAndClose('基础配置_保养标准_page.html')">保存 / 提交</button>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="../assets/common.js"></script>
+  <script>
+    (function(){
+      const embed = new URLSearchParams(location.search).get('embed') === '1';
+      if(!embed){
+        document.body.classList.add('standalone-lightbox');
+        const root = document.getElementById('root');
+        root.classList.add('standalone-panel');
+        root.classList.remove('modal-page-panel');
+      }
+    })();
+    
+  </script>
+</body>
+</html>

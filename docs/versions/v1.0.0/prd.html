@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>智能设备管理 EMS PRD v1.0.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root { color-scheme: light; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif; }
+    .toc-link.active { color: #0f766e; font-weight: 600; background: #f1f5f9; }
+    #content { line-height: 1.7; }
+    #content h1 { font-size: 1.875rem; font-weight: 700; margin: 0 0 1.25rem; color: #0f172a; }
+    #content h2 { font-size: 1.5rem; font-weight: 700; margin: 2.5rem 0 1rem; padding-top: 0.5rem; border-top: 1px solid #e2e8f0; color: #0f172a; scroll-margin-top: 88px; }
+    #content h3 { font-size: 1.2rem; font-weight: 650; margin: 1.75rem 0 0.75rem; color: #1e293b; scroll-margin-top: 88px; }
+    #content h4 { font-size: 1.05rem; font-weight: 600; margin: 1.25rem 0 0.5rem; color: #334155; scroll-margin-top: 88px; }
+    #content p, #content li { color: #334155; font-size: 0.95rem; }
+    #content ul, #content ol { padding-left: 1.25rem; margin: 0.5rem 0 1rem; }
+    #content table { width: 100%; border-collapse: collapse; margin: 0.75rem 0 1.25rem; font-size: 0.9rem; }
+    #content th, #content td { border: 1px solid #e2e8f0; padding: 0.55rem 0.7rem; text-align: left; vertical-align: top; }
+    #content th { background: #f8fafc; color: #0f172a; font-weight: 600; }
+    #content blockquote { border-left: 3px solid #94a3b8; padding: 0.25rem 0 0.25rem 0.9rem; color: #64748b; margin: 0.75rem 0; }
+    #content code { background: #f1f5f9; padding: 0.1rem 0.35rem; border-radius: 0.25rem; font-size: 0.85em; }
+    #content pre { background: #0f172a; color: #e2e8f0; padding: 1rem; border-radius: 0.75rem; overflow-x: auto; margin: 0.75rem 0 1.25rem; }
+    #content hr { border: none; border-top: 1px solid #e2e8f0; margin: 1.5rem 0; }
+    .mermaid { background: #fff; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 1rem; margin: 0.75rem 0 1.25rem; overflow-x: auto; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+  <header class="fixed top-0 inset-x-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
+    <div class="mx-auto flex max-w-[1400px] items-center justify-between px-4 py-3">
+      <div>
+        <div class="text-sm font-semibold text-slate-900">智能设备管理（EMS）PRD</div>
+        <div class="text-xs text-slate-500">版本 v1.0.0 · 2026-08-07 · 首版重构</div>
+      </div>
+      <a href="prd.md" class="text-xs text-teal-700 hover:underline">查看 Markdown 源文件</a>
+    </div>
+  </header>
+
+  <div class="mx-auto flex max-w-[1400px] gap-6 px-4 pb-16 pt-20">
+    <aside class="hidden w-56 shrink-0 lg:block">
+      <nav id="toc" class="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-3 text-sm shadow-[0_4px_12px_rgba(0,0,0,0.05)]"></nav>
+    </aside>
+    <main class="min-w-0 flex-1">
+      <article id="content" class="mx-auto max-w-[960px] rounded-2xl border border-slate-200 bg-white px-6 py-8 shadow-[0_4px_12px_rgba(0,0,0,0.05)] md:px-10"></article>
+    </main>
+  </div>
+
+  <script>
+    mermaid.initialize({ startOnLoad: false, theme: "neutral" });
+
+    async function loadPrd() {
+      const res = await fetch("prd.md");
+      const md = await res.text();
+      const renderer = new marked.Renderer();
+      const mermaidBlocks = [];
+      renderer.code = function (code, infostring) {
+        const lang = (infostring || "").trim();
+        if (lang === "mermaid") {
+          const id = "mmd-" + mermaidBlocks.length;
+          mermaidBlocks.push({ id, code });
+          return '<div class="mermaid" id="' + id + '">' + code.replace(/</g, "&lt;") + "</div>";
+        }
+        return "<pre><code>" + code.replace(/</g, "&lt;") + "</code></pre>";
+      };
+      marked.setOptions({ renderer, mangle: false, headerIds: true });
+      document.getElementById("content").innerHTML = marked.parse(md);
+
+      // rebuild toc from h2/h3
+      const toc = document.getElementById("toc");
+      const heads = document.querySelectorAll("#content h2, #content h3");
+      let html = '<div class="mb-2 px-2 text-xs font-semibold uppercase tracking-wide text-slate-400">目录</div>';
+      heads.forEach((h) => {
+        if (!h.id) {
+          h.id = h.textContent.trim().replace(/\s+/g, "-");
+        }
+        const indent = h.tagName === "H3" ? "pl-4" : "pl-2";
+        html += '<a href="#' + h.id + '" class="toc-link block rounded-lg px-2 py-1.5 text-slate-600 hover:bg-slate-50 ' + indent + '">' + h.textContent + "</a>";
+      });
+      toc.innerHTML = html;
+
+      await mermaid.run({ nodes: document.querySelectorAll(".mermaid") });
+    }
+
+    loadPrd().catch((e) => {
+      document.getElementById("content").innerHTML = "<p class='text-red-600'>PRD 加载失败，请通过本地静态服务打开本页，或直接阅读 prd.md。</p><pre class='text-xs mt-4'>" + e + "</pre>";
+    });
+  </script>
+</body>
+</html>

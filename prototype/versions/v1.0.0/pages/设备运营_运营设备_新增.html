@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>新增运营设备 · 弹窗 · EMS v1.0.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="stylesheet" href="../assets/common.css" />
+</head>
+<body class="modal-page">
+  <div id="root" class="modal-page-panel">
+    <div class="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white px-5 py-3">
+      <div>
+        <div class="text-sm font-semibold text-slate-900">新增运营设备</div>
+        <div class="text-xs text-slate-500">弹窗 · 灯箱样式 · 不含审批/消息/权限</div>
+      </div>
+      <button type="button" class="lightbox-close static" onclick="closeModalOrBack('设备运营_运营设备_page.html')" aria-label="关闭">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="flex-1 overflow-auto px-5 py-4">
+<div class="mb-6 flex flex-wrap items-center gap-4 text-sm">
+  <div class="flex items-center gap-2"><span class="step-dot step-on">1</span><span>基础信息</span></div>
+  <div class="h-px w-10 bg-slate-200"></div>
+  <div class="flex items-center gap-2"><span class="step-dot step-off" id="s2">2</span><span>保养信息</span></div>
+  <div class="h-px w-10 bg-slate-200"></div>
+  <div class="flex items-center gap-2"><span class="step-dot step-off" id="s3">3</span><span>制造信息</span></div>
+</div>
+<div id="step1" class="grid grid-cols-1 gap-4 md:grid-cols-2">
+  <div class="md:col-span-2"><button type="button" class="btn-ghost inline-flex px-4 py-2 text-sm" onclick="openLightbox('通用_选择设备清单.html')">选择设备清单数据</button></div>
+  <div><label class="mb-1 block text-xs text-slate-500">运营设备编号</label><input class="input" placeholder="唯一性校验" /></div>
+  <div><label class="mb-1 block text-xs text-slate-500">设备来源</label><select class="select"><option>自有</option><option>租赁</option></select></div>
+  <div><label class="mb-1 block text-xs text-slate-500">设备状态</label><input class="input" value="正常" disabled /></div>
+  <div><label class="mb-1 block text-xs text-slate-500">运行状态</label><select class="select"><option>闲置中</option><option>运行中</option></select></div>
+  <div><label class="mb-1 block text-xs text-slate-500">安装日期</label><input class="input" type="date" /></div>
+  <div><label class="mb-1 block text-xs text-slate-500">投用日期</label><input class="input" type="date" /></div>
+</div>
+<div id="step2" class="hidden space-y-4">
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div><label class="mb-1 block text-xs text-slate-500">维保负责人</label><input class="input" placeholder="组织架构单选" /></div>
+    <div><label class="mb-1 block text-xs text-slate-500">保养周期（天）</label><input class="input" type="number" min="1" value="30" /></div>
+  </div>
+  <div class="rounded-2xl border border-slate-200 p-4">
+    <div class="mb-2 flex justify-between text-sm"><span class="font-medium">定期保养项目</span>
+      <button type="button" class="text-teal-700 hover:underline" onclick="openLightbox('通用_选择保养标准.html')">选择保养标准</button></div>
+    <p class="text-xs text-slate-500">多次选择累加不覆盖；至少一条完整项目。</p>
+  </div>
+  <div class="rounded-2xl border border-dashed border-slate-200 p-4 text-sm text-slate-500">专项保养可多组，允许为空。</div>
+</div>
+<div id="step3" class="hidden grid grid-cols-1 gap-4 md:grid-cols-2">
+  <div><label class="mb-1 block text-xs text-slate-500">出厂日期</label><input class="input" type="date" /></div>
+  <div><label class="mb-1 block text-xs text-slate-500">联系方式</label><input class="input" placeholder="手机号" /></div>
+  <div class="md:col-span-2"><label class="mb-1 block text-xs text-slate-500">制造商</label><input class="input" /></div>
+</div>
+<div class="mt-6 flex justify-between border-t border-slate-100 pt-4">
+  <button class="btn-ghost px-4 py-2 text-sm" id="btnPrev" onclick="changeStep(-1)" disabled>上一步</button>
+  <button class="btn-brand px-4 py-2 text-sm" id="btnNext" onclick="changeStep(1)">下一步</button>
+</div>
+</div>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="../assets/common.js"></script>
+  <script>
+    (function(){
+      const embed = new URLSearchParams(location.search).get('embed') === '1';
+      if(!embed){
+        document.body.classList.add('standalone-lightbox');
+        const root = document.getElementById('root');
+        root.classList.add('standalone-panel');
+        root.classList.remove('modal-page-panel');
+      }
+    })();
+    
+let step=1;
+function changeStep(d){
+  const next=step+d;
+  if(next<1||next>3) return;
+  if(d>0 && step===3){
+    toast('运营设备已创建；二维码已固化（原型）');
+    setTimeout(()=>closeModalOrBack('设备运营_运营设备_page.html'), 400);
+    return;
+  }
+  step=next;
+  ['step1','step2','step3'].forEach((id,i)=>document.getElementById(id).classList.toggle('hidden', i+1!==step));
+  document.getElementById('s2').className='step-dot '+(step>=2?'step-on':'step-off');
+  document.getElementById('s3').className='step-dot '+(step>=3?'step-on':'step-off');
+  document.getElementById('btnPrev').disabled = step===1;
+  document.getElementById('btnNext').textContent = step===3 ? '完成创建' : '下一步';
+}
+
+  </script>
+</body>
+</html>

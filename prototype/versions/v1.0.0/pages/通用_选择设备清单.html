@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>选择设备清单 · 弹窗 · EMS v1.0.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="stylesheet" href="../assets/common.css" />
+</head>
+<body class="modal-page">
+  <div id="root" class="modal-page-panel">
+    <div class="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white px-5 py-3">
+      <div>
+        <div class="text-sm font-semibold text-slate-900">选择设备清单</div>
+        <div class="text-xs text-slate-500">弹窗 · 灯箱样式 · 不含审批/消息/权限</div>
+      </div>
+      <button type="button" class="lightbox-close static" onclick="closeModalOrBack('设备运营_运营设备_page.html')" aria-label="关闭">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="flex-1 overflow-auto px-5 py-4">
+    <p class="mb-3 text-xs text-slate-500">从基础配置设备清单中选择。</p>
+    <div class="overflow-hidden rounded-2xl border border-slate-200">
+      <div class="border-b border-slate-100 p-3"><input class="input" placeholder="搜索编号/名称" /></div>
+      <table class="w-full text-sm"><thead class="bg-slate-50"><tr>
+        <th class="px-3 py-3 text-left">编号</th><th class="px-3 py-3 text-left">名称</th><th class="px-3 py-3 text-left">类型</th>
+        <th class="px-3 py-3 text-left">操作</th>
+      </tr></thead><tbody><tr class='table-row border-t border-slate-100'><td class='px-3 py-3'>EQ-T-001</td><td class='px-3 py-3'>门式起重机</td><td class='px-3 py-3'>起重设备</td><td class='px-3 py-3'><button class='btn-brand px-3 py-1.5 text-xs' onclick="toast('已选择：EQ-T-001');closeLightbox()">选择</button></td></tr><tr class='table-row border-t border-slate-100'><td class='px-3 py-3'>EQ-T-002</td><td class='px-3 py-3'>皮带输送机</td><td class='px-3 py-3'>输送设备</td><td class='px-3 py-3'><button class='btn-brand px-3 py-1.5 text-xs' onclick="toast('已选择：EQ-T-002');closeLightbox()">选择</button></td></tr></tbody></table>
+    </div>
+    <div class="mt-4 flex justify-end">
+      <button type="button" class="btn-ghost px-4 py-2 text-sm" onclick="closeLightbox()">关闭</button>
+    </div>
+    </div>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="../assets/common.js"></script>
+  <script>
+    (function(){
+      const embed = new URLSearchParams(location.search).get('embed') === '1';
+      if(!embed){
+        document.body.classList.add('standalone-lightbox');
+        const root = document.getElementById('root');
+        root.classList.add('standalone-panel');
+        root.classList.remove('modal-page-panel');
+      }
+    })();
+    
+  </script>
+</body>
+</html>
