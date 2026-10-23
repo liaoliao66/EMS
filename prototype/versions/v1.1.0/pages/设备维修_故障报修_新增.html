@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>新增故障报修 · 弹窗 · EMS v1.0.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="stylesheet" href="../assets/common.css" />
+</head>
+<body class="modal-page">
+  <div id="root" class="modal-page-panel">
+    <div class="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white px-5 py-3">
+      <div>
+        <div class="text-sm font-semibold text-slate-900">新增故障报修</div>
+        <div class="text-xs text-slate-500">弹窗 · 灯箱样式 · 不含审批/消息/权限</div>
+      </div>
+      <button type="button" class="lightbox-close static" onclick="closeModalOrBack('设备维修_故障报修_page.html')" aria-label="关闭">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="flex-1 overflow-auto px-5 py-4">
+    <div class="pb-2">
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2"><div><label class="mb-1 block text-xs text-slate-500">运营设备</label><button type="button" class="btn-ghost block w-full px-3 py-2 text-left text-sm" onclick="openLightbox('通用_选择运营设备.html')">选择运营设备</button></div><div><label class="mb-1 block text-xs text-slate-500">故障类型</label><select class="select"><option>机械故障</option><option>电气故障</option><option>其他</option></select></div><div><label class="mb-1 block text-xs text-slate-500">严重程度</label><select class="select"><option>一般</option><option>严重</option><option>紧急</option></select></div><div><label class="mb-1 block text-xs text-slate-500">故障发生时间</label><input class="input" type="datetime-local" /></div><div><label class="mb-1 block text-xs text-slate-500">故障描述</label><textarea class="textarea" rows="3"></textarea></div></div>
+      <p class="mt-4 text-xs text-slate-400">填写完成后保存；提交后由平台审批承接。</p>
+      <div class="mt-6 flex justify-end gap-2 border-t border-slate-100 pt-4">
+        <button type="button" class="btn-ghost px-4 py-2 text-sm" onclick="closeModalOrBack('设备维修_故障报修_page.html')">取消</button>
+        <button type="button" class="btn-brand px-4 py-2 text-sm" onclick="saveAndClose('设备维修_故障报修_page.html')">保存 / 提交</button>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="../assets/common.js"></script>
+  <script>
+    (function(){
+      const embed = new URLSearchParams(location.search).get('embed') === '1';
+      if(!embed){
+        document.body.classList.add('standalone-lightbox');
+        const root = document.getElementById('root');
+        root.classList.add('standalone-panel');
+        root.classList.remove('modal-page-panel');
+      }
+    })();
+    
+  </script>
+</body>
+</html>
