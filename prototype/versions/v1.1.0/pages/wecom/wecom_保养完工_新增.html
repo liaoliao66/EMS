@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>新增保养完工 · 企微H5 · EMS v1.1.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",sans-serif;line-height:1.6;margin:0;min-height:100vh;background:linear-gradient(160deg,#e2e8f0 0%,#f8fafc 45%,#cbd5e1 100%);}
+    .stage{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;}
+    .phone{width:390px;height:844px;border-radius:48px;border:10px solid #e5e7eb;background:#0f172a;box-shadow:0 24px 64px rgba(15,23,42,.22);position:relative;overflow:hidden;flex-shrink:0;}
+    .island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:32px;border-radius:20px;background:#0f172a;z-index:30;}
+    .phone-screen{position:absolute;inset:0;margin:8px;border-radius:40px;overflow:hidden;background:#f8fafc;display:flex;flex-direction:column;}
+    .status-bar{height:48px;padding:14px 20px 0;display:flex;justify-content:space-between;align-items:flex-start;font-size:12px;font-weight:600;color:#0f172a;flex-shrink:0;}
+    .nav-bar{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:#fff;border-bottom:1px solid #e2e8f0;flex-shrink:0;}
+    .content{flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch;}
+    .content::-webkit-scrollbar{display:none;}
+    .home-bar{height:22px;display:flex;align-items:center;justify-content:center;background:#fff;flex-shrink:0;}
+    .home-bar span{width:128px;height:5px;border-radius:999px;background:#cbd5e1;}
+    .btn{border-radius:1rem;} .btn:active{transform:scale(0.95);}
+    .card{background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;box-shadow:0 4px 12px rgba(0,0,0,0.05);}
+    .input,.select,textarea.input{width:100%;border:1px solid #e2e8f0;border-radius:0.75rem;padding:0.625rem 0.75rem;font-size:0.875rem;background:#fff;outline:none;box-sizing:border-box;}
+    .input:focus,.select:focus,textarea.input:focus{border-color:#0f766e;}
+    .label{display:block;margin-bottom:0.25rem;font-size:0.75rem;color:#64748b;}
+    .req::after{content:"*";color:#e11d48;margin-left:2px;}
+    .sec-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-left:8px;border-left:3px solid #0f766e;}
+    .sec-title h3{font-size:14px;font-weight:600;color:#0f172a;margin:0;}
+    .toast{position:absolute;left:50%;bottom:36px;transform:translateX(-50%) translateY(8px);background:#0f172a;color:#fff;padding:10px 14px;border-radius:14px;font-size:13px;opacity:0;transition:.2s;z-index:50;max-width:86%;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .modal-mask{position:absolute;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:40;}
+    .modal-mask.show{display:flex;}
+    .modal-box{width:100%;max-height:82%;overflow:auto;background:#fff;border-radius:1.5rem;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,0.08);}
+    .hint{margin-top:14px;font-size:12px;color:#64748b;text-align:center;}
+    .upload{border:1px dashed #cbd5e1;border-radius:0.75rem;padding:16px 12px;text-align:center;color:#64748b;font-size:12px;background:#f8fafc;}
+    .row{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:6px 0;}
+    .row .k{color:#64748b;flex-shrink:0;} .row .v{color:#0f172a;text-align:right;}
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="phone-screen">
+        <div class="status-bar"><span>9:41</span><span style="display:flex;gap:6px;"><i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-full"></i></span></div>
+        <div class="nav-bar">
+          <a href="wecom_保养完工_列表.html" class="text-slate-700" onclick="clearDraft()"><i class="fa-solid fa-chevron-left"></i></a>
+          <div class="text-sm font-semibold text-slate-900">新增保养完工</div>
+          <span class="w-4"></span>
+        </div>
+        <div class="content">
+
+          <!-- 选择计划（移动端入口，回填后供派工校验） -->
+          <div class="card mb-3 p-4">
+            <div class="sec-title">
+              <h3>保养计划</h3>
+              <a href="wecom_选择保养计划.html" class="text-xs font-medium text-teal-700">选择保养计划</a>
+            </div>
+            <div id="planEmpty" class="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-center text-xs text-slate-400">请选择已生效且未完工的保养计划</div>
+            <div id="planInfo" class="hidden">
+              <div class="row"><span class="k">保养计划单号</span><span class="v" id="pCode"></span></div>
+              <div class="row"><span class="k">保养计划名称</span><span class="v" id="pName"></span></div>
+              <div class="row"><span class="k">保养类型</span><span class="v" id="pType"></span></div>
+              <div class="row"><span class="k">运营设备</span><span class="v" id="pEquipLine"></span></div>
+              <div class="row"><span class="k">计划生效时间</span><span class="v text-xs" id="pEffect"></span></div>
+            </div>
+          </div>
+
+          <!-- PC 顶部：作业人员 / 作业时间 表 -->
+          <div class="card mb-3 p-4">
+            <div class="sec-title">
+              <h3>派工记录</h3>
+              <button type="button" class="text-xs font-medium text-teal-700" onclick="goAddDispatch()">添加派工记录</button>
+            </div>
+            <div class="overflow-hidden rounded-xl border border-slate-200">
+              <div class="grid grid-cols-[40px_1fr_1.4fr_44px] bg-slate-50 px-2 py-2 text-[11px] font-medium text-slate-500">
+                <div>序号</div><div>作业人员</div><div>作业时间</div><div>操作</div>
+              </div>
+              <div id="dispatchList"></div>
+              <div id="dispatchEmpty" class="px-3 py-6 text-center text-xs text-slate-400">暂无数据</div>
+            </div>
+            <p class="mt-2 text-xs text-slate-400">作业开始时间须晚于计划业务生效时间；同一计划下作业时间不得交叉。</p>
+          </div>
+
+          <!-- PC：完工验收 -->
+          <div class="card mb-3 p-4">
+            <div class="sec-title"><h3>完工验收</h3></div>
+
+            <div class="mb-3">
+              <label class="label">验收完工单号</label>
+              <input id="finishNo" class="input" placeholder="请输入" value="" />
+            </div>
+            <div class="mb-3">
+              <label class="label">验收日期</label>
+              <input id="acceptDate" class="input" type="date" value="2026-10-26" />
+            </div>
+            <div class="mb-3">
+              <label class="label req">下次保养</label>
+              <input id="nextDate" class="input" type="date" value="" />
+              <p class="mt-1 text-xs text-slate-400">请选择时间；专项保养可不填。</p>
+            </div>
+            <div class="mb-3">
+              <label class="label req">验收人员</label>
+              <select id="acceptor" class="select">
+                <option value="">请选择</option>
+                <option>王工</option>
+                <option>赵工</option>
+                <option>李工</option>
+                <option>张飞</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="label req">通知人员</label>
+              <select id="notifyPerson" class="select">
+                <option value="">请选择</option>
+                <option>设备主管</option>
+                <option>维保班长</option>
+                <option>武穴管理员</option>
+                <option>张倩</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="label">验收概述</label>
+              <textarea id="summary" class="input" rows="4" maxlength="500" placeholder="请输入" oninput="document.getElementById('cnt').textContent=this.value.length+'/500'"></textarea>
+              <div class="mt-1 text-right text-xs text-slate-400"><span id="cnt">0/500</span></div>
+            </div>
+            <div class="mb-3">
+              <label class="label">记录表</label>
+              <button type="button" class="upload w-full" onclick="toast('已上传记录表（原型）')">
+                <i class="fa-solid fa-cloud-arrow-up mb-1 text-base text-slate-400"></i><br/>上传文件
+                <div class="mt-1 text-[11px] text-slate-400">支持 .rar .zip .doc .docx .pdf，单文件≤20MB，最多10个</div>
+              </button>
+            </div>
+            <div>
+              <label class="label">现场照片</label>
+              <button type="button" class="upload w-full" onclick="toast('已上传现场照片（原型）')">
+                <i class="fa-solid fa-cloud-arrow-up mb-1 text-base text-slate-400"></i><br/>上传图片
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pb-2">
+            <a href="wecom_保养完工_列表.html" class="btn flex items-center justify-center border border-slate-200 bg-white py-3 text-sm text-slate-700" onclick="clearDraft()">取消</a>
+            <button type="button" class="btn bg-teal-700 py-3 text-sm text-white" onclick="submitForm()">确定</button>
+          </div>
+
+        </div>
+        <div class="home-bar"><span></span></div>
+        <div id="toast" class="toast"></div>
+      </div>
+    </div>
+    <p class="hint">企微 H5 演示外壳（iPhone 16 · 390×844）· 无独立底部业务 Tab</p>
+  </div>
+  <script>
+    function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('show');clearTimeout(window.t);window.t=setTimeout(()=>el.classList.remove('show'),2000);}
+    function openModal(id){document.getElementById(id).classList.add('show');}
+    function closeModal(id){document.getElementById(id).classList.remove('show');}
+
+    var plan=null, dispatches=[];
+
+    function clearDraft(){
+      sessionStorage.removeItem('ems_wecom_selected_plan');
+      sessionStorage.removeItem('ems_wecom_dispatches');
+    }
+
+    function fillPlan(p){
+      plan=p;
+      if(!p){
+        document.getElementById('planEmpty').classList.remove('hidden');
+        document.getElementById('planInfo').classList.add('hidden');
+        return;
+      }
+      document.getElementById('planEmpty').classList.add('hidden');
+      document.getElementById('planInfo').classList.remove('hidden');
+      document.getElementById('pCode').textContent=p.code||'-';
+      document.getElementById('pName').textContent=p.name||'-';
+      document.getElementById('pType').textContent=p.type||'-';
+      document.getElementById('pEquipLine').textContent=(p.equipCode||'')+' / '+(p.equip||'');
+      document.getElementById('pEffect').textContent=p.effectAt||'-';
+      // 周期保养默认带出下次保养建议（仍可改）
+      if(p.type!=='专项保养' && p.cycle){
+        var d=document.getElementById('acceptDate').value || '2026-10-26';
+        var dt=new Date(d+'T00:00:00');
+        dt.setDate(dt.getDate()+p.cycle);
+        document.getElementById('nextDate').value=dt.getFullYear()+'-'+('0'+(dt.getMonth()+1)).slice(-2)+'-'+('0'+dt.getDate()).slice(-2);
+      }
+    }
+
+    function renderDispatch(){
+      var box=document.getElementById('dispatchList');
+      var empty=document.getElementById('dispatchEmpty');
+      if(!dispatches.length){
+        box.innerHTML='';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+      box.innerHTML=dispatches.map(function(d,i){
+        var doneCnt=(d.items||[]).filter(function(x){return x.done;}).length;
+        var total=(d.items||[]).length;
+        return '<div class="border-t border-slate-100 px-2 py-2 text-xs text-slate-700">'
+          + '<div class="grid grid-cols-[40px_1fr_1.4fr_44px] items-start">'
+          + '<div>'+(i+1)+'</div>'
+          + '<div><div class="truncate font-medium">'+d.person+'</div>'
+          + (d.no?'<div class="text-slate-400 mt-0.5">'+d.no+'</div>':'')
+          + '</div>'
+          + '<div class="leading-snug">'+fmt(d.start)+'<br/>'+fmt(d.end)+'</div>'
+          + '<button type="button" class="text-rose-600" onclick="removeDispatch('+i+')">删除</button>'
+          + '</div>'
+          + ((total||d.photos||d.files||d.note)?'<div class="mt-1 pl-10 text-slate-400">项目 '+(total?doneCnt+'/'+total:'-')+' · 照片 '+(d.photos||0)+' · 附件 '+(d.files||0)+(d.note?' · '+d.note:'')+'</div>':'')
+          + '</div>';
+      }).join('');
+    }
+    function fmt(v){return v?v.replace('T',' '):'-';}
+
+    function goAddDispatch(){
+      if(!plan){toast('请先选择保养计划');return;}
+      location.href='wecom_添加派工记录.html';
+    }
+
+    function removeDispatch(i){
+      dispatches.splice(i,1);
+      sessionStorage.setItem('ems_wecom_dispatches', JSON.stringify(dispatches));
+      renderDispatch();
+    }
+
+    function submitForm(){
+      if(!plan){toast('请先选择保养计划');return;}
+      if(!document.getElementById('nextDate').value && plan.type!=='专项保养'){toast('请选择下次保养');return;}
+      if(!document.getElementById('acceptor').value){toast('请选择验收人员');return;}
+      if(!document.getElementById('notifyPerson').value){toast('请选择通知人员');return;}
+      toast('已确定（进入平台审批）');
+      clearDraft();
+      setTimeout(function(){location.href='wecom_保养完工_列表.html';},700);
+    }
+
+    try{fillPlan(JSON.parse(sessionStorage.getItem('ems_wecom_selected_plan')||'null'));}catch(e){fillPlan(null);}
+    try{dispatches=JSON.parse(sessionStorage.getItem('ems_wecom_dispatches')||'[]')||[];}catch(e){dispatches=[];}
+    renderDispatch();
+  </script>
+</body>
+</html>

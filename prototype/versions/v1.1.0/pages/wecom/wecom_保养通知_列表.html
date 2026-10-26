@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>保养通知 · 企微H5 · EMS v1.1.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",sans-serif;line-height:1.6;margin:0;min-height:100vh;background:linear-gradient(160deg,#e2e8f0 0%,#f8fafc 45%,#cbd5e1 100%);}
+    .stage{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;}
+    .phone{width:390px;height:844px;border-radius:48px;border:10px solid #e5e7eb;background:#0f172a;box-shadow:0 24px 64px rgba(15,23,42,.22);position:relative;overflow:hidden;flex-shrink:0;}
+    .island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:32px;border-radius:20px;background:#0f172a;z-index:30;}
+    .phone-screen{position:absolute;inset:0;margin:8px;border-radius:40px;overflow:hidden;background:#f8fafc;display:flex;flex-direction:column;}
+    .status-bar{height:48px;padding:14px 20px 0;display:flex;justify-content:space-between;align-items:flex-start;font-size:12px;font-weight:600;color:#0f172a;flex-shrink:0;}
+    .nav-bar{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:#fff;border-bottom:1px solid #e2e8f0;flex-shrink:0;}
+    .content{flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch;}
+    .content::-webkit-scrollbar{display:none;}
+    .home-bar{height:22px;display:flex;align-items:center;justify-content:center;background:#fff;flex-shrink:0;}
+    .home-bar span{width:128px;height:5px;border-radius:999px;background:#cbd5e1;}
+    .btn{border-radius:1rem;} .btn:active{transform:scale(0.95);}
+    .card{background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;box-shadow:0 4px 12px rgba(0,0,0,0.05);}
+    .input{width:100%;border:1px solid #e2e8f0;border-radius:0.75rem;padding:0.625rem 0.75rem;font-size:0.875rem;background:#fff;outline:none;box-sizing:border-box;}
+    .input:focus{border-color:#0f766e;}
+    .toast{position:absolute;left:50%;bottom:36px;transform:translateX(-50%) translateY(8px);background:#0f172a;color:#fff;padding:10px 14px;border-radius:14px;font-size:13px;opacity:0;transition:.2s;z-index:50;max-width:86%;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .hint{margin-top:14px;font-size:12px;color:#64748b;text-align:center;}
+    .meta{font-size:12px;color:#64748b;line-height:1.5;}
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="phone-screen">
+        <div class="status-bar"><span>9:41</span><span style="display:flex;gap:6px;"><i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-full"></i></span></div>
+        <div class="nav-bar">
+          <a href="wecom_入口.html" class="text-slate-700"><i class="fa-solid fa-chevron-left"></i></a>
+          <div class="text-sm font-semibold text-slate-900">保养通知</div>
+          <span class="w-4"></span>
+        </div>
+        <div class="content">
+          <p class="mb-2 text-xs text-slate-500">业务汇总（只读），操作仅「查看」· 非消息中心</p>
+          <div class="mb-3 flex gap-2">
+            <input id="kw" class="input" placeholder="通知编号 / 设备编号 / 名称 / 位置" />
+            <button type="button" class="btn shrink-0 bg-teal-700 px-3 text-sm text-white" onclick="doSearch()">查询</button>
+          </div>
+          <div id="list" class="space-y-3"></div>
+          <p id="empty" class="hidden py-10 text-center text-sm text-slate-400">无匹配通知</p>
+        </div>
+        <div class="home-bar"><span></span></div>
+        <div id="toast" class="toast"></div>
+      </div>
+    </div>
+    <p class="hint">企微 H5 演示外壳（iPhone 16 · 390×844）· 无独立底部业务 Tab</p>
+  </div>
+  <script>
+    function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('show');clearTimeout(window.t);window.t=setTimeout(()=>el.classList.remove('show'),2000);}
+
+    // 对齐 PC「保养通知」列表字段
+    const DATA = [
+      {
+        id:'55456541', code:'55456541', name:'2530门机', spec:'4546', loc:'3泊位',
+        notifyAt:'2024-12-23 12:00', owner:'张飞',
+        content:'设备即将到达保养周期，请维保负责人及时编制保养计划并通知停止作业。'
+      },
+      {
+        id:'55456542', code:'55456542', name:'4530门机', spec:'4546', loc:'3泊位',
+        notifyAt:'2024-12-23 12:00', owner:'张飞',
+        content:'周期保养到期提醒：请核查上次保养记录后安排本次保养计划。'
+      },
+      {
+        id:'55456543', code:'55456543', name:'4531门机', spec:'4546', loc:'3泊位',
+        notifyAt:'2024-12-23 12:00', owner:'张飞',
+        content:'专项保养提醒：液压系统建议安排专项检查，请确认停机窗口。'
+      }
+    ];
+
+    let filtered = DATA.slice();
+
+    function render(){
+      const box=document.getElementById('list');
+      const empty=document.getElementById('empty');
+      if(!filtered.length){ box.innerHTML=''; empty.classList.remove('hidden'); return; }
+      empty.classList.add('hidden');
+      box.innerHTML = filtered.map(function(d){
+        return '<a href="wecom_保养通知_详情.html?id='+encodeURIComponent(d.id)+'" class="card block p-4">'
+          + '<div class="flex items-start justify-between gap-2">'
+          + '<div class="min-w-0">'
+          + '<div class="text-sm font-medium text-slate-900">'+d.id+' · '+d.name+'</div>'
+          + '<div class="meta mt-1">运营设备编号 '+d.code+' · 规格 '+d.spec+' · '+d.loc+'</div>'
+          + '<div class="meta mt-0.5">通知日清 '+d.notifyAt+' · 维保负责人 '+d.owner+'</div>'
+          + '</div>'
+          + '<span class="shrink-0 text-xs font-medium text-teal-700">查看</span>'
+          + '</div></a>';
+      }).join('');
+    }
+
+    function doSearch(){
+      const q=(document.getElementById('kw').value||'').trim().toLowerCase();
+      filtered = DATA.filter(function(d){
+        if(!q) return true;
+        return (d.id+d.code+d.name+d.loc+d.owner+d.spec).toLowerCase().indexOf(q)>=0;
+      });
+      render();
+      if(q) toast('已查询，共 '+filtered.length+' 条');
+    }
+
+    document.getElementById('kw').addEventListener('keydown', function(e){ if(e.key==='Enter') doSearch(); });
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>选择运营设备 · 企微H5 · EMS v1.1.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+      line-height:1.6; margin:0; min-height:100vh;
+      background:linear-gradient(160deg,#e2e8f0 0%,#f8fafc 45%,#cbd5e1 100%);
+    }
+    .stage{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;}
+    .phone{
+      width:390px; height:844px; border-radius:48px; border:10px solid #e5e7eb;
+      background:#0f172a; box-shadow:0 24px 64px rgba(15,23,42,.22);
+      position:relative; overflow:hidden; flex-shrink:0;
+    }
+    .island{
+      position:absolute; top:12px; left:50%; transform:translateX(-50%);
+      width:120px; height:32px; border-radius:20px; background:#0f172a; z-index:30;
+    }
+    .phone-screen{
+      position:absolute; inset:0; margin:8px; border-radius:40px; overflow:hidden;
+      background:#f8fafc; display:flex; flex-direction:column;
+    }
+    .status-bar{
+      height:48px; padding:14px 20px 0; display:flex; justify-content:space-between;
+      align-items:flex-start; font-size:12px; font-weight:600; color:#0f172a; flex-shrink:0;
+    }
+    .nav-bar{
+      height:48px; display:flex; align-items:center; justify-content:space-between;
+      padding:0 16px; background:#fff; border-bottom:1px solid #e2e8f0; flex-shrink:0;
+    }
+    .content{flex:1; overflow-y:auto; padding:16px; -webkit-overflow-scrolling:touch;}
+    .content::-webkit-scrollbar{display:none;}
+    .footer-bar{
+      flex-shrink:0; padding:12px 16px 8px; background:#fff; border-top:1px solid #e2e8f0;
+    }
+    .home-bar{
+      height:22px; display:flex; align-items:center; justify-content:center;
+      background:#fff; flex-shrink:0;
+    }
+    .home-bar span{width:128px; height:5px; border-radius:999px; background:#cbd5e1;}
+    .btn{border-radius:1rem;}
+    .btn:active{transform:scale(0.95);}
+    .card{background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;box-shadow:0 4px 12px rgba(0,0,0,0.05);}
+    .input{
+      width:100%; border:1px solid #e2e8f0; border-radius:0.75rem; padding:0.625rem 0.75rem;
+      font-size:0.875rem; background:#fff; color:#0f172a; outline:none; box-sizing:border-box;
+    }
+    .input:focus{border-color:#0f766e;}
+    .toast{
+      position:absolute; left:50%; bottom:88px; transform:translateX(-50%) translateY(8px);
+      background:#0f172a;color:#fff;padding:10px 14px;border-radius:14px;font-size:13px;
+      opacity:0;transition:.2s;z-index:50; max-width:86%;
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .hint{margin-top:14px; font-size:12px; color:#64748b; text-align:center;}
+    .equip-item{cursor:pointer; transition:border-color .15s, background .15s;}
+    .equip-item.selected{border-color:#0f766e; background:#f0fdfa;}
+    .radio{
+      width:18px;height:18px;border-radius:999px;border:2px solid #cbd5e1;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .equip-item.selected .radio{border-color:#0f766e;}
+    .equip-item.selected .radio::after{
+      content:""; width:8px;height:8px;border-radius:999px;background:#0f766e;
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone" aria-label="手机预览外壳">
+      <div class="island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span style="display:flex;gap:6px;align-items:center;">
+            <i class="fa-solid fa-signal"></i>
+            <i class="fa-solid fa-wifi"></i>
+            <i class="fa-solid fa-battery-full"></i>
+          </span>
+        </div>
+        <div class="nav-bar">
+          <a href="wecom_保养计划_新增.html" class="text-slate-700"><i class="fa-solid fa-chevron-left"></i></a>
+          <div class="text-sm font-semibold text-slate-900">运营设备</div>
+          <span class="w-4"></span>
+        </div>
+        <div class="content">
+          <div class="mb-3 flex gap-2">
+            <input id="kw" class="input" placeholder="关键字：编号 / 名称 / 位置" />
+            <button type="button" class="btn shrink-0 bg-teal-700 px-3 text-sm text-white" onclick="doSearch()">查询</button>
+          </div>
+          <p class="mb-2 text-xs text-slate-500">仅可选状态为「正常」的运营设备 · 单选</p>
+          <div id="list" class="space-y-2"></div>
+          <p id="empty" class="hidden py-10 text-center text-sm text-slate-400">无匹配设备</p>
+        </div>
+        <div class="footer-bar">
+          <div class="grid grid-cols-2 gap-3">
+            <a href="wecom_保养计划_新增.html" class="btn flex items-center justify-center border border-slate-200 bg-white py-3 text-sm text-slate-700">取消</a>
+            <button type="button" class="btn bg-teal-700 py-3 text-sm text-white" onclick="confirmPick()">确定</button>
+          </div>
+        </div>
+        <div class="home-bar"><span></span></div>
+        <div id="toast" class="toast"></div>
+      </div>
+    </div>
+    <p class="hint">企微 H5 演示外壳（iPhone 16 · 390×844）· 无独立底部业务 Tab</p>
+  </div>
+  <script>
+    function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('show');clearTimeout(window.t);window.t=setTimeout(()=>el.classList.remove('show'),2000);}
+
+    const qs = new URLSearchParams(location.search);
+    const from = qs.get('from') || '';
+    let backUrl;
+    if (from === 'repair') {
+      backUrl = 'wecom_故障报修_新增.html';
+    } else {
+      const typeQs = qs.get('type') || sessionStorage.getItem('ems_wecom_plan_type') || '周期保养';
+      backUrl = 'wecom_保养计划_新增.html?type=' + encodeURIComponent(typeQs);
+    }
+    document.querySelector('.nav-bar a').href = backUrl;
+    document.querySelector('.footer-bar a').href = backUrl;
+
+    const DATA = [
+      {code:'W-447744', name:'门机', loc:'泊位2', status:'正常', type:'起重设备', spec:'1345', source:'自有', useDate:'2023-05-18', unit:'', owner:'武穴管理员'},
+      {code:'MEJ2', name:'卸煤线2#皮带机', loc:'B2廊道', status:'正常', type:'输送设备', spec:'2400t/h', source:'自有', useDate:'2025-12-04', unit:'', owner:''},
+      {code:'MEJ1', name:'卸煤线1#皮带机', loc:'B1栈桥', status:'正常', type:'输送设备', spec:'2400t/h', source:'自有', useDate:'2025-12-04', unit:'', owner:''},
+      {code:'KJ23', name:'块煤线3#皮带机', loc:'3#煤棚', status:'正常', type:'输送设备', spec:'1200t/h', source:'自有', useDate:'2026-03-20', unit:'中铁十一局', owner:'武穴管理员'},
+      {code:'KJ22', name:'块煤线2#皮带机', loc:'2#煤棚', status:'正常', type:'输送设备', spec:'1200t/h', source:'自有', useDate:'2026-03-20', unit:'', owner:''},
+      {code:'KJ21', name:'块煤线1#皮带机', loc:'1#煤棚', status:'正常', type:'输送设备', spec:'1200t/h', source:'自有', useDate:'2026-03-20', unit:'', owner:''},
+      {code:'MJ14', name:'末煤线4#皮带机', loc:'B4廊道', status:'正常', type:'输送设备', spec:'1400t/h', source:'自有', useDate:'2026-02-10', unit:'', owner:''},
+      {code:'MJ13', name:'末煤线3#皮带机', loc:'B3廊道', status:'正常', type:'输送设备', spec:'1400t/h', source:'自有', useDate:'2026-02-10', unit:'', owner:''},
+      {code:'MJ12', name:'末煤线2#皮带机', loc:'B2廊道', status:'正常', type:'输送设备', spec:'1400t/h', source:'自有', useDate:'2026-02-10', unit:'', owner:''}
+    ];
+
+    let selected = null;
+    let filtered = DATA.slice();
+
+    function render(){
+      const box = document.getElementById('list');
+      const empty = document.getElementById('empty');
+      if(!filtered.length){
+        box.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+      box.innerHTML = filtered.map(function(d, idx){
+        const on = selected && selected.code === d.code;
+        return '<div class="card equip-item p-3 '+(on?'selected':'')+'" data-idx="'+idx+'" onclick="pick('+idx+')">'
+          + '<div class="flex gap-3">'
+          + '<div class="radio mt-1"></div>'
+          + '<div class="min-w-0 flex-1">'
+          + '<div class="flex items-center justify-between gap-2">'
+          + '<div class="text-sm font-medium text-slate-900">'+d.code+' · '+d.name+'</div>'
+          + '<span class="rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700">'+d.status+'</span>'
+          + '</div>'
+          + '<div class="mt-1 text-xs text-slate-500">'+d.loc+' · '+d.type+' · '+d.spec+'</div>'
+          + '<div class="mt-0.5 text-xs text-slate-400">投用 '+d.useDate+(d.owner?(' · '+d.owner):'')+'</div>'
+          + '</div></div></div>';
+      }).join('');
+    }
+
+    function pick(idx){
+      selected = filtered[idx];
+      render();
+    }
+
+    function doSearch(){
+      const q = (document.getElementById('kw').value || '').trim().toLowerCase();
+      filtered = DATA.filter(function(d){
+        if(!q) return true;
+        return (d.code+d.name+d.loc+d.spec).toLowerCase().indexOf(q) >= 0;
+      });
+      if(selected && !filtered.some(function(d){return d.code===selected.code;})) selected = null;
+      render();
+    }
+
+    function confirmPick(){
+      if(!selected){
+        toast('请先选择一台运营设备');
+        return;
+      }
+      sessionStorage.setItem('ems_wecom_selected_equip', JSON.stringify(selected));
+      toast('已选择：'+selected.code);
+      setTimeout(function(){ location.href = backUrl; }, 400);
+    }
+
+    document.getElementById('kw').addEventListener('keydown', function(e){
+      if(e.key === 'Enter') doSearch();
+    });
+
+    try{
+      const prev = JSON.parse(sessionStorage.getItem('ems_wecom_selected_equip')||'null');
+      if(prev && prev.code) selected = prev;
+    }catch(e){}
+    render();
+  </script>
+</body>
+</html>

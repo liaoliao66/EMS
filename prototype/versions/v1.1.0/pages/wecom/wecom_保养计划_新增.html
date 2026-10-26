@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>保养计划 · 企微H5 · EMS v1.1.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",sans-serif;line-height:1.6;margin:0;min-height:100vh;background:linear-gradient(160deg,#e2e8f0 0%,#f8fafc 45%,#cbd5e1 100%);}
+    .stage{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;}
+    .phone{width:390px;height:844px;border-radius:48px;border:10px solid #e5e7eb;background:#0f172a;box-shadow:0 24px 64px rgba(15,23,42,.22);position:relative;overflow:hidden;flex-shrink:0;}
+    .island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:32px;border-radius:20px;background:#0f172a;z-index:30;}
+    .phone-screen{position:absolute;inset:0;margin:8px;border-radius:40px;overflow:hidden;background:#f8fafc;display:flex;flex-direction:column;}
+    .status-bar{height:48px;padding:14px 20px 0;display:flex;justify-content:space-between;align-items:flex-start;font-size:12px;font-weight:600;color:#0f172a;flex-shrink:0;}
+    .nav-bar{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:#fff;border-bottom:1px solid #e2e8f0;flex-shrink:0;}
+    .content{flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch;}
+    .content::-webkit-scrollbar{display:none;}
+    .home-bar{height:22px;display:flex;align-items:center;justify-content:center;background:#fff;flex-shrink:0;}
+    .home-bar span{width:128px;height:5px;border-radius:999px;background:#cbd5e1;}
+    .btn{border-radius:1rem;} .btn:active{transform:scale(0.95);}
+    .card{background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;box-shadow:0 4px 12px rgba(0,0,0,0.05);}
+    .input,.select,textarea.input{width:100%;border:1px solid #e2e8f0;border-radius:0.75rem;padding:0.625rem 0.75rem;font-size:0.875rem;background:#fff;outline:none;box-sizing:border-box;}
+    .input:focus,.select:focus,textarea.input:focus{border-color:#0f766e;}
+    .input[readonly],.input:disabled{background:#f8fafc;color:#334155;}
+    .label{display:block;margin-bottom:0.25rem;font-size:0.75rem;color:#64748b;}
+    .req::after{content:"*";color:#e11d48;margin-left:2px;}
+    .sec-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-left:8px;border-left:3px solid #0f766e;}
+    .sec-title h3{font-size:14px;font-weight:600;color:#0f172a;margin:0;}
+    .toast{position:absolute;left:50%;bottom:36px;transform:translateX(-50%) translateY(8px);background:#0f172a;color:#fff;padding:10px 14px;border-radius:14px;font-size:13px;opacity:0;transition:.2s;z-index:50;max-width:86%;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .modal-mask{position:absolute;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:40;}
+    .modal-mask.show{display:flex;}
+    .modal-box{width:100%;max-height:78%;overflow:auto;background:#fff;border-radius:1.5rem;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,0.08);}
+    .hint{margin-top:14px;font-size:12px;color:#64748b;text-align:center;}
+    .upload{border:1px dashed #cbd5e1;border-radius:0.75rem;padding:16px 12px;text-align:center;color:#64748b;font-size:12px;background:#f8fafc;}
+    .cell{border:1px solid #e2e8f0;border-radius:0.75rem;padding:10px;background:#f8fafc;}
+    .cell .k{font-size:11px;color:#64748b;} .cell .v{font-size:13px;color:#0f172a;margin-top:2px;word-break:break-all;}
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="phone-screen">
+        <div class="status-bar"><span>9:41</span><span style="display:flex;gap:6px;"><i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-full"></i></span></div>
+        <div class="nav-bar">
+          <a href="wecom_保养计划_列表.html" class="text-slate-700" id="backBtn"><i class="fa-solid fa-chevron-left"></i></a>
+          <div class="text-sm font-semibold text-slate-900">保养计划</div>
+          <span class="w-4"></span>
+        </div>
+        <div class="content">
+
+          <!-- 1. 保养设备 -->
+          <div class="card mb-3 p-4">
+            <div class="sec-title">
+              <h3>保养设备</h3>
+              <a id="pickEquip" href="wecom_选择运营设备.html" class="text-xs font-medium text-teal-700">选择运营设备</a>
+            </div>
+            <div id="equipEmpty" class="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-center text-xs text-slate-400">请先选择运营设备</div>
+            <div id="equipInfo" class="hidden grid grid-cols-2 gap-2">
+              <div class="cell"><div class="k">运营设备编号</div><div class="v" id="eqCode">-</div></div>
+              <div class="cell"><div class="k">运营设备名称</div><div class="v" id="eqName">-</div></div>
+              <div class="cell"><div class="k">规格型号</div><div class="v" id="eqSpec">-</div></div>
+              <div class="cell"><div class="k">使用位置</div><div class="v" id="eqLoc">-</div></div>
+            </div>
+          </div>
+
+          <!-- 2. 保养类型（周期 / 专项差异） -->
+          <div class="card mb-3 p-4">
+            <div class="sec-title"><h3>保养类型</h3></div>
+            <div class="mb-3">
+              <label class="label req">保养类型</label>
+              <select id="maintainType" class="select" onchange="onTypeChange()">
+                <option value="周期保养">周期保养</option>
+                <option value="专项保养">专项保养</option>
+              </select>
+            </div>
+
+            <!-- 专项专属：专项项目 -->
+            <div id="specialBlock" class="mb-3 hidden">
+              <label class="label req">专项项目</label>
+              <select id="specialProject" class="select">
+                <option value="">请选择</option>
+                <option>液压系统</option>
+                <option>电气系统</option>
+                <option>行走机构</option>
+                <option>钢丝绳更换</option>
+              </select>
+            </div>
+
+            <!-- 周期专属：保养周期 -->
+            <div id="cycleBlock" class="mb-3">
+              <div class="grid grid-cols-2 gap-2">
+                <div class="cell">
+                  <div class="k req">保养周期（天）</div>
+                  <input id="cycleDays" class="input mt-1 border-0 bg-transparent p-0" type="number" value="120" />
+                </div>
+                <div class="cell">
+                  <div class="k">上次保养</div>
+                  <div class="v" id="lastMaintain">2024-09-09</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 专项时上次保养单独一行；项目/手册共用 -->
+            <div id="lastOnlyBlock" class="mb-3 hidden">
+              <div class="cell">
+                <div class="k">上次保养</div>
+                <div class="v">2024-09-09</div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div class="cell">
+                <div class="k">保养项目</div>
+                <button type="button" class="mt-1 text-sm text-teal-700" onclick="openModal('mItems')">查看</button>
+              </div>
+              <div class="cell">
+                <div class="k">操作手册</div>
+                <button type="button" class="mt-1 text-sm text-teal-700" onclick="openModal('mManual')">查看</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. 保养计划 -->
+          <div class="card mb-3 p-4">
+            <div class="sec-title"><h3>保养计划</h3></div>
+            <div class="mb-3">
+              <label class="label req">计划编号</label>
+              <input class="input" disabled value="系统生成" />
+            </div>
+            <div class="mb-3">
+              <label class="label req">计划名称</label>
+              <input id="planName" class="input" placeholder="请输入" />
+            </div>
+            <div class="mb-3">
+              <label class="label req">计划时间</label>
+              <div class="space-y-2">
+                <input id="planStart" class="input" type="datetime-local" value="2026-08-15T09:00" />
+                <input id="planEnd" class="input" type="datetime-local" value="2026-08-15T12:00" />
+              </div>
+              <p class="mt-1 text-xs text-slate-400">请选择时间范围</p>
+            </div>
+            <div class="mb-3">
+              <label class="label req">保养人员</label>
+              <select id="maintainer" class="select">
+                <option value="">请选择</option>
+                <option>王工</option>
+                <option>赵工</option>
+                <option>李工</option>
+                <option>张飞</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="label req">通知人员</label>
+              <select id="notifyPerson" class="select">
+                <option value="">请选择</option>
+                <option>设备主管</option>
+                <option>维保班长</option>
+                <option>武穴管理员</option>
+                <option>张倩</option>
+              </select>
+              <p class="mt-1 text-xs text-slate-400">注释：通知相应人员停止作业</p>
+            </div>
+            <div class="mb-3">
+              <label class="label">相关说明</label>
+              <textarea id="remark" class="input" rows="4" placeholder="请输入"></textarea>
+            </div>
+            <div>
+              <label class="label">相关资料</label>
+              <button type="button" class="upload w-full" onclick="toast('已上传文件（原型）')">
+                <i class="fa-solid fa-cloud-arrow-up mb-1 text-base text-slate-400"></i><br/>上传文件
+                <div class="mt-1 text-[11px] text-slate-400">支持 .rar .zip .doc .docx .pdf，单个文件不能超过 500MB</div>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pb-2">
+            <a href="wecom_保养计划_列表.html" class="btn flex items-center justify-center border border-slate-200 bg-white py-3 text-sm text-slate-700" id="cancelBtn">取消</a>
+            <button type="button" class="btn bg-teal-700 py-3 text-sm text-white" onclick="submitForm()">确定</button>
+          </div>
+
+          <div id="mItems" class="modal-mask" onclick="if(event.target===this)closeModal('mItems')">
+            <div class="modal-box">
+              <div class="mb-3 flex items-center justify-between">
+                <div class="text-sm font-semibold">保养项目</div>
+                <button type="button" onclick="closeModal('mItems')"><i class="fa-solid fa-xmark text-slate-400"></i></button>
+              </div>
+              <ul id="itemList" class="space-y-2 text-sm text-slate-700"></ul>
+              <button type="button" class="btn mt-4 w-full bg-teal-700 py-3 text-sm text-white" onclick="closeModal('mItems')">关闭</button>
+            </div>
+          </div>
+
+          <div id="mManual" class="modal-mask" onclick="if(event.target===this)closeModal('mManual')">
+            <div class="modal-box">
+              <div class="mb-3 flex items-center justify-between">
+                <div class="text-sm font-semibold">操作手册</div>
+                <button type="button" onclick="closeModal('mManual')"><i class="fa-solid fa-xmark text-slate-400"></i></button>
+              </div>
+              <p id="manualName" class="text-sm text-slate-700">《门机周期保养作业指导书》v2.1</p>
+              <p class="mt-2 text-xs text-slate-400">原型演示：仅展示手册名称。</p>
+              <button type="button" class="btn mt-4 w-full bg-teal-700 py-3 text-sm text-white" onclick="closeModal('mManual')">关闭</button>
+            </div>
+          </div>
+        </div>
+        <div class="home-bar"><span></span></div>
+        <div id="toast" class="toast"></div>
+      </div>
+    </div>
+    <p class="hint">企微 H5 演示外壳（iPhone 16 · 390×844）· 无独立底部业务 Tab</p>
+  </div>
+  <script>
+    function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('show');clearTimeout(window.t);window.t=setTimeout(()=>el.classList.remove('show'),2000);}
+    function openModal(id){document.getElementById(id).classList.add('show');}
+    function closeModal(id){document.getElementById(id).classList.remove('show');}
+
+    var qs=new URLSearchParams(location.search);
+    var initType=qs.get('type')==='专项保养'?'专项保养':'周期保养';
+
+    function syncTypeLinks(){
+      var t=document.getElementById('maintainType').value;
+      var q='?type='+encodeURIComponent(t);
+      document.getElementById('pickEquip').href='wecom_选择运营设备.html'+q;
+      sessionStorage.setItem('ems_wecom_plan_type', t);
+      // 刷新项目/手册文案
+      var items=document.getElementById('itemList');
+      var manual=document.getElementById('manualName');
+      if(t==='专项保养'){
+        var sp=document.getElementById('specialProject').value||'液压系统';
+        items.innerHTML='<li class="rounded-xl bg-slate-50 px-3 py-2">1. '+sp+'外观与泄漏检查</li>'
+          +'<li class="rounded-xl bg-slate-50 px-3 py-2">2. '+sp+'压力与阀组复核</li>'
+          +'<li class="rounded-xl bg-slate-50 px-3 py-2">3. 更换滤芯 / 紧固接头</li>';
+        manual.textContent='《门机'+sp+'专项保养作业指导书》v1.3';
+      }else{
+        items.innerHTML='<li class="rounded-xl bg-slate-50 px-3 py-2">1. 检查钢丝绳与滑轮磨损</li>'
+          +'<li class="rounded-xl bg-slate-50 px-3 py-2">2. 润滑行走/回转机构</li>'
+          +'<li class="rounded-xl bg-slate-50 px-3 py-2">3. 紧固地脚与结构件螺栓</li>'
+          +'<li class="rounded-xl bg-slate-50 px-3 py-2">4. 电气绝缘与限位复核</li>';
+        manual.textContent='《门机周期保养作业指导书》v2.1';
+      }
+    }
+
+    function onTypeChange(){
+      var t=document.getElementById('maintainType').value;
+      var isSpecial=t==='专项保养';
+      document.getElementById('specialBlock').classList.toggle('hidden', !isSpecial);
+      document.getElementById('cycleBlock').classList.toggle('hidden', isSpecial);
+      document.getElementById('lastOnlyBlock').classList.toggle('hidden', !isSpecial);
+      var eq=null;
+      try{eq=JSON.parse(sessionStorage.getItem('ems_wecom_selected_equip')||'null');}catch(e){}
+      var name=document.getElementById('planName');
+      if(eq&&eq.name){
+        name.value=eq.name+(isSpecial?'专项保养计划':'周期保养计划');
+      }
+      syncTypeLinks();
+    }
+
+    function fillEquip(eq){
+      if(!eq){
+        document.getElementById('equipEmpty').classList.remove('hidden');
+        document.getElementById('equipInfo').classList.add('hidden');
+        return;
+      }
+      document.getElementById('equipEmpty').classList.add('hidden');
+      document.getElementById('equipInfo').classList.remove('hidden');
+      document.getElementById('eqCode').textContent=eq.code||'-';
+      document.getElementById('eqName').textContent=eq.name||'-';
+      document.getElementById('eqSpec').textContent=eq.spec||'-';
+      document.getElementById('eqLoc').textContent=eq.loc||'-';
+      var t=document.getElementById('maintainType').value;
+      var name=document.getElementById('planName');
+      if(!name.value) name.value=(eq.name||'')+(t==='专项保养'?'专项保养计划':'周期保养计划');
+    }
+
+    function submitForm(){
+      if(!document.getElementById('eqCode').textContent || document.getElementById('eqCode').textContent==='-'){
+        toast('请先选择运营设备'); return;
+      }
+      var t=document.getElementById('maintainType').value;
+      if(t==='专项保养' && !document.getElementById('specialProject').value){ toast('请选择专项项目'); return; }
+      if(t==='周期保养' && !document.getElementById('cycleDays').value){ toast('请填写保养周期'); return; }
+      if(!document.getElementById('planName').value.trim()){ toast('请输入计划名称'); return; }
+      if(!document.getElementById('planStart').value || !document.getElementById('planEnd').value){ toast('请选择计划时间范围'); return; }
+      if(document.getElementById('planStart').value >= document.getElementById('planEnd').value){ toast('计划结束时间须晚于开始时间'); return; }
+      if(!document.getElementById('maintainer').value){ toast('请选择保养人员'); return; }
+      if(!document.getElementById('notifyPerson').value){ toast('请选择通知人员'); return; }
+      toast('已确定（进入平台审批）');
+      sessionStorage.removeItem('ems_wecom_selected_equip');
+      setTimeout(function(){ location.href='wecom_保养计划_列表.html'; }, 700);
+    }
+
+    document.getElementById('specialProject').addEventListener('change', syncTypeLinks);
+    document.getElementById('backBtn').addEventListener('click', function(){ sessionStorage.removeItem('ems_wecom_selected_equip'); });
+    document.getElementById('cancelBtn').addEventListener('click', function(){ sessionStorage.removeItem('ems_wecom_selected_equip'); });
+
+    document.getElementById('maintainType').value=initType;
+    onTypeChange();
+    try{ fillEquip(JSON.parse(sessionStorage.getItem('ems_wecom_selected_equip')||'null')); }catch(e){ fillEquip(null); }
+  </script>
+</body>
+</html>

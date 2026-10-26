@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>智能设备巡检 · 企微H5 · EMS v1.0.0</title>
+  <title>智能设备管理 · 企微H5 · EMS v1.1.0</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <style>
@@ -44,6 +44,12 @@
     .btn{border-radius:1rem;}
     .btn:active{transform:scale(0.95);}
     .card{background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;box-shadow:0 4px 12px rgba(0,0,0,0.05);}
+    .input,.select,textarea.input{
+      width:100%; border:1px solid #e2e8f0; border-radius:0.75rem; padding:0.625rem 0.75rem;
+      font-size:0.875rem; background:#fff; color:#0f172a; outline:none; box-sizing:border-box;
+    }
+    .input:focus,.select:focus{border-color:#0f766e;}
+    .label{display:block; margin-bottom:0.25rem; font-size:0.75rem; color:#64748b;}
     .toast{
       position:absolute; left:50%; bottom:36px; transform:translateX(-50%) translateY(8px);
       background:#0f172a;color:#fff;padding:10px 14px;border-radius:14px;font-size:13px;
@@ -55,8 +61,14 @@
       display:none; align-items:center; justify-content:center; padding:20px; z-index:40;
     }
     .modal-mask.show{display:flex;}
+    .modal-box{
+      width:100%; max-height:78%; overflow:auto; background:#fff; border-radius:1.5rem;
+      padding:16px; box-shadow:0 8px 24px rgba(0,0,0,0.08);
+    }
     .hint{margin-top:14px; font-size:12px; color:#64748b; text-align:center;}
-  </style>
+    .chip{border-radius:999px;border:1px solid #e2e8f0;background:#fff;color:#475569;padding:6px 12px;font-size:12px;font-weight:500;white-space:nowrap;}
+    .chip.active{background:#0f172a;color:#fff;border-color:#0f172a;}
+</style>
 </head>
 <body>
   <div class="stage">
@@ -73,11 +85,13 @@
         </div>
         <div class="nav-bar">
           <span class="w-4"></span>
-          <div class="text-sm font-semibold text-slate-900">智能设备巡检</div>
+          <div class="text-sm font-semibold text-slate-900">智能设备管理</div>
           <span class="w-4"></span>
         </div>
         <div class="content">
+
 <p class="mb-3 text-xs text-slate-500">企业微信工作台入口 · 无独立底部 Tab · 复用企微导航</p>
+
 <div class="card p-4">
   <div class="text-base font-semibold text-slate-900">点巡检</div>
   <p class="mt-1 text-sm text-slate-500">扫描巡检区域二维码，录入正常/异常结果。</p>
@@ -86,12 +100,32 @@
     <a href="wecom_记录列表.html" class="btn flex items-center justify-center border border-slate-200 bg-white px-3 py-3 text-sm text-slate-700">我的记录</a>
   </div>
 </div>
-<div class="card mt-3 overflow-hidden">
-  <img class="h-36 w-full object-cover" src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&q=80" alt="现场设备" />
-  <div class="p-4 text-sm text-slate-600">支持正常/异常分支；异常须填写巡检内容并上传现场照片。</div>
+
+<div class="card mt-3 p-4">
+  <div class="text-base font-semibold text-slate-900">保养管理</div>
+  <p class="mt-1 text-sm text-slate-500">通知汇总、计划编制、派工完工。</p>
+  <div class="mt-4 grid grid-cols-1 gap-2">
+    <a href="wecom_保养通知_列表.html" class="btn flex items-center justify-between border border-slate-200 bg-white px-3 py-3 text-sm text-slate-700"><span><i class="fa-solid fa-bell mr-2 text-slate-400"></i>保养通知</span><i class="fa-solid fa-chevron-right text-slate-300"></i></a>
+    <a href="wecom_保养计划_列表.html" class="btn flex items-center justify-between border border-slate-200 bg-white px-3 py-3 text-sm text-slate-700"><span><i class="fa-solid fa-calendar-check mr-2 text-slate-400"></i>保养计划</span><i class="fa-solid fa-chevron-right text-slate-300"></i></a>
+    <a href="wecom_保养完工_列表.html" class="btn flex items-center justify-between border border-slate-200 bg-white px-3 py-3 text-sm text-slate-700"><span><i class="fa-solid fa-clipboard-check mr-2 text-slate-400"></i>保养完工</span><i class="fa-solid fa-chevron-right text-slate-300"></i></a>
+  </div>
 </div>
+
+<div class="card mt-3 p-4">
+  <div class="text-base font-semibold text-slate-900">设备维修</div>
+  <p class="mt-1 text-sm text-slate-500">故障通知至报修、计划、派工、验收全链路。</p>
+  <div class="mt-4 grid grid-cols-1 gap-2">
+    <a href="wecom_故障通知_列表.html" class="btn flex items-center justify-between border border-slate-200 bg-white px-3 py-3 text-sm text-slate-700"><span><i class="fa-solid fa-triangle-exclamation mr-2 text-slate-400"></i>故障通知</span><i class="fa-solid fa-chevron-right text-slate-300"></i></a>
+    <a href="wecom_故障报修_列表.html" class="btn flex items-center justify-between border border-slate-200 bg-white px-3 py-3 text-sm text-slate-700"><span><i class="fa-solid fa-screwdriver-wrench mr-2 text-slate-400"></i>故障报修</span><i class="fa-solid fa-chevron-right text-slate-300"></i></a>
+    <a href="wecom_维修计划_列表.html" class="btn flex items-center justify-between border border-slate-200 bg-white px-3 py-3 text-sm text-slate-700"><span><i class="fa-solid fa-list-check mr-2 text-slate-400"></i>维修计划</span><i class="fa-solid fa-chevron-right text-slate-300"></i></a>
+    <a href="wecom_维修派工_列表.html" class="btn flex items-center justify-between border border-slate-200 bg-white px-3 py-3 text-sm text-slate-700"><span><i class="fa-solid fa-user-gear mr-2 text-slate-400"></i>维修派工</span><i class="fa-solid fa-chevron-right text-slate-300"></i></a>
+    <a href="wecom_维修完工_列表.html" class="btn flex items-center justify-between border border-slate-200 bg-white px-3 py-3 text-sm text-slate-700"><span><i class="fa-solid fa-flag-checkered mr-2 text-slate-400"></i>维修完工</span><i class="fa-solid fa-chevron-right text-slate-300"></i></a>
+  </div>
+</div>
+
 <a class="mt-4 block text-center text-xs text-slate-400" href="../../index.html">返回版本入口</a>
-</div>
+
+        </div>
         <div class="home-bar"><span></span></div>
         <div id="toast" class="toast"></div>
       </div>
@@ -99,9 +133,22 @@
     <p class="hint">企微 H5 演示外壳（iPhone 16 · 390×844）· 无独立底部业务 Tab</p>
   </div>
   <script>
+
     function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('show');clearTimeout(window.t);window.t=setTimeout(()=>el.classList.remove('show'),2000);}
     function openModal(id){document.getElementById(id).classList.add('show');}
     function closeModal(id){document.getElementById(id).classList.remove('show');}
+    function bindChips(rootId){
+      const root=document.getElementById(rootId); if(!root) return;
+      root.querySelectorAll('.chip').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          root.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+          btn.classList.add('active');
+          toast('已筛选：'+btn.textContent.trim());
+        });
+      });
+    }
+
+
   </script>
 </body>
 </html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>保养完工 · 企微H5 · EMS v1.1.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",sans-serif;line-height:1.6;margin:0;min-height:100vh;background:linear-gradient(160deg,#e2e8f0 0%,#f8fafc 45%,#cbd5e1 100%);}
+    .stage{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;}
+    .phone{width:390px;height:844px;border-radius:48px;border:10px solid #e5e7eb;background:#0f172a;box-shadow:0 24px 64px rgba(15,23,42,.22);position:relative;overflow:hidden;flex-shrink:0;}
+    .island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:32px;border-radius:20px;background:#0f172a;z-index:30;}
+    .phone-screen{position:absolute;inset:0;margin:8px;border-radius:40px;overflow:hidden;background:#f8fafc;display:flex;flex-direction:column;}
+    .status-bar{height:48px;padding:14px 20px 0;display:flex;justify-content:space-between;align-items:flex-start;font-size:12px;font-weight:600;color:#0f172a;flex-shrink:0;}
+    .nav-bar{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:#fff;border-bottom:1px solid #e2e8f0;flex-shrink:0;}
+    .content{flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch;}
+    .content::-webkit-scrollbar{display:none;}
+    .home-bar{height:22px;display:flex;align-items:center;justify-content:center;background:#fff;flex-shrink:0;}
+    .home-bar span{width:128px;height:5px;border-radius:999px;background:#cbd5e1;}
+    .btn{border-radius:1rem;} .btn:active{transform:scale(0.95);}
+    .card{background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;box-shadow:0 4px 12px rgba(0,0,0,0.05);}
+    .input{width:100%;border:1px solid #e2e8f0;border-radius:0.75rem;padding:0.625rem 0.75rem;font-size:0.875rem;background:#fff;outline:none;box-sizing:border-box;}
+    .chip{border-radius:999px;border:1px solid #e2e8f0;background:#fff;color:#475569;padding:6px 12px;font-size:12px;font-weight:500;white-space:nowrap;}
+    .chip.active{background:#0f172a;color:#fff;border-color:#0f172a;}
+    .toast{position:absolute;left:50%;bottom:36px;transform:translateX(-50%) translateY(8px);background:#0f172a;color:#fff;padding:10px 14px;border-radius:14px;font-size:13px;opacity:0;transition:.2s;z-index:50;max-width:86%;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .hint{margin-top:14px;font-size:12px;color:#64748b;text-align:center;}
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="phone-screen">
+        <div class="status-bar"><span>9:41</span><span style="display:flex;gap:6px;"><i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-full"></i></span></div>
+        <div class="nav-bar">
+          <a href="wecom_入口.html" class="text-slate-700"><i class="fa-solid fa-chevron-left"></i></a>
+          <div class="text-sm font-semibold text-slate-900">保养完工</div>
+          <a href="wecom_保养完工_新增.html" class="text-sm text-teal-700" onclick="sessionStorage.removeItem('ems_wecom_selected_plan');sessionStorage.removeItem('ems_wecom_dispatches')">新增</a>
+        </div>
+        <div class="content">
+          <div class="mb-3 flex gap-2">
+            <input id="kw" class="input" placeholder="完工单号 / 计划单号 / 设备编号或名称" />
+            <button type="button" class="btn shrink-0 bg-teal-700 px-3 text-sm text-white" onclick="doSearch()">查询</button>
+          </div>
+          <div id="bwChips" class="mb-3 flex gap-2 overflow-x-auto pb-1">
+            <button type="button" class="chip active" data-status="全部">全部</button>
+            <button type="button" class="chip" data-status="草稿">草稿</button>
+            <button type="button" class="chip" data-status="审核中">审核中</button>
+            <button type="button" class="chip" data-status="已通过">已通过</button>
+          </div>
+          <div id="list" class="space-y-3"></div>
+          <p id="empty" class="hidden py-10 text-center text-sm text-slate-400">暂无该条件的完工单</p>
+        </div>
+        <div class="home-bar"><span></span></div>
+        <div id="toast" class="toast"></div>
+      </div>
+    </div>
+    <p class="hint">企微 H5 演示外壳（iPhone 16 · 390×844）· 无独立底部业务 Tab</p>
+  </div>
+  <script>
+    function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('show');clearTimeout(window.t);window.t=setTimeout(()=>el.classList.remove('show'),2000);}
+    var statusFilter='全部';
+    // 对齐 PC 列表核心业务字段（不含审批人/节点）
+    var DATA=[
+      {code:'BW-2026-015', accept:'2026-08-10', next:'2026-09-10', planCode:'BJ-2026-021', planName:'1号门吊周期保养计划', type:'周期保养', equipCode:'OP-2026-001', equip:'1号门吊', spec:'MQ2535', status:'已通过', creator:'王工', createdAt:'2026-08-10 12:20'},
+      {code:'BW-2026-019', accept:'2026-08-07', next:'-', planCode:'BJ-2026-028', planName:'2号输送线专项保养', type:'专项保养', equipCode:'OP-2026-002', equip:'2号输送线', spec:'DTII', status:'草稿', creator:'赵工', createdAt:'2026-08-07 18:01'},
+      {code:'BW-2026-020', accept:'2026-08-12', next:'2026-09-11', planCode:'BJ-2026-030', planName:'卸煤线2#皮带机周期保养', type:'周期保养', equipCode:'MEJ2', equip:'卸煤线2#皮带机', spec:'2400t/h', status:'审核中', creator:'李工', createdAt:'2026-08-12 16:40'}
+    ];
+    function badge(s){
+      if(s==='已通过') return '<span class="rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700">已通过</span>';
+      if(s==='审核中') return '<span class="rounded-full bg-amber-50 px-2 py-0.5 text-xs text-amber-700">审核中</span>';
+      return '<span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">草稿</span>';
+    }
+    function applyFilter(showToast){
+      var q=(document.getElementById('kw').value||'').trim().toLowerCase();
+      var rows=DATA.filter(function(d){
+        if(statusFilter!=='全部'&&d.status!==statusFilter) return false;
+        if(!q) return true;
+        return (d.code+d.planCode+d.planName+d.equipCode+d.equip+d.type+d.spec+d.creator).toLowerCase().indexOf(q)>=0;
+      });
+      var box=document.getElementById('list'), empty=document.getElementById('empty');
+      if(!rows.length){box.innerHTML='';empty.classList.remove('hidden');}
+      else{
+        empty.classList.add('hidden');
+        box.innerHTML=rows.map(function(d){
+          var body='<div class="flex items-start justify-between gap-2">'
+            + '<div class="min-w-0"><div class="text-sm font-medium text-slate-900">'+d.code+'</div>'
+            + '<div class="mt-1 text-xs text-slate-800">'+d.planName+'</div>'
+            + '<div class="mt-1 text-xs text-slate-500">'+d.equipCode+' / '+d.equip+' · '+d.spec+'</div>'
+            + '<div class="mt-0.5 text-xs text-slate-400">'+d.type+' · 计划 '+d.planCode+'</div>'
+            + '<div class="mt-0.5 text-xs text-slate-400">验收 '+d.accept+(d.next!=='-'?' · 下次 '+d.next:'')+'</div>'
+            + '</div><div class="shrink-0">'+badge(d.status)+'</div></div>';
+          if(d.status==='草稿'){
+            return '<div class="card p-4">'+body
+              + '<div class="mt-3 flex flex-wrap gap-3 text-xs text-teal-700">'
+              + '<a href="wecom_保养完工_新增.html">编辑</a>'
+              + '<button type="button" onclick="toast(\'已提交，进入平台审批\')">提交</button>'
+              + '<button type="button" onclick="toast(\'已删除（原型）\')">删除</button></div></div>';
+          }
+          return '<a href="wecom_保养完工_详情.html" class="card block p-4">'+body+'</a>';
+        }).join('');
+      }
+      if(showToast) toast('已查询，共 '+rows.length+' 条');
+    }
+    function doSearch(){ applyFilter(true); }
+    document.querySelectorAll('#bwChips .chip').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        document.querySelectorAll('#bwChips .chip').forEach(function(c){c.classList.remove('active');});
+        btn.classList.add('active');
+        statusFilter=btn.getAttribute('data-status');
+        applyFilter();
+      });
+    });
+    document.getElementById('kw').addEventListener('keydown',function(e){ if(e.key==='Enter') doSearch(); });
+    applyFilter();
+  </script>
+</body>
+</html>

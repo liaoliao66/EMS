@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>维修计划 · 企微H5 · EMS v1.1.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",sans-serif;line-height:1.6;margin:0;min-height:100vh;background:linear-gradient(160deg,#e2e8f0 0%,#f8fafc 45%,#cbd5e1 100%);}
+    .stage{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;}
+    .phone{width:390px;height:844px;border-radius:48px;border:10px solid #e5e7eb;background:#0f172a;box-shadow:0 24px 64px rgba(15,23,42,.22);position:relative;overflow:hidden;flex-shrink:0;}
+    .island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:32px;border-radius:20px;background:#0f172a;z-index:30;}
+    .phone-screen{position:absolute;inset:0;margin:8px;border-radius:40px;overflow:hidden;background:#f8fafc;display:flex;flex-direction:column;}
+    .status-bar{height:48px;padding:14px 20px 0;display:flex;justify-content:space-between;align-items:flex-start;font-size:12px;font-weight:600;color:#0f172a;flex-shrink:0;}
+    .nav-bar{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:#fff;border-bottom:1px solid #e2e8f0;flex-shrink:0;}
+    .content{flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch;}
+    .content::-webkit-scrollbar{display:none;}
+    .home-bar{height:22px;display:flex;align-items:center;justify-content:center;background:#fff;flex-shrink:0;}
+    .home-bar span{width:128px;height:5px;border-radius:999px;background:#cbd5e1;}
+    .btn{border-radius:1rem;} .btn:active{transform:scale(0.95);}
+    .card{background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;box-shadow:0 4px 12px rgba(0,0,0,0.05);}
+    .input,.select,textarea.input{width:100%;border:1px solid #e2e8f0;border-radius:0.75rem;padding:0.625rem 0.75rem;font-size:0.875rem;background:#fff;outline:none;box-sizing:border-box;}
+    .input:focus,.select:focus,textarea.input:focus{border-color:#0f766e;}
+    .input[readonly],.input:disabled{background:#f8fafc;color:#334155;}
+    .label{display:block;margin-bottom:0.25rem;font-size:0.75rem;color:#64748b;}
+    .req::after{content:"*";color:#e11d48;margin-left:2px;}
+    .sec-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-left:8px;border-left:3px solid #0f766e;}
+    .sec-title h3{font-size:14px;font-weight:600;color:#0f172a;margin:0;}
+    .toast{position:absolute;left:50%;bottom:36px;transform:translateX(-50%) translateY(8px);background:#0f172a;color:#fff;padding:10px 14px;border-radius:14px;font-size:13px;opacity:0;transition:.2s;z-index:50;max-width:86%;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .hint{margin-top:14px;font-size:12px;color:#64748b;text-align:center;}
+    .cell{border:1px solid #e2e8f0;border-radius:0.75rem;padding:10px;background:#f8fafc;}
+    .cell .k{font-size:11px;color:#64748b;} .cell .v{font-size:13px;color:#0f172a;margin-top:2px;word-break:break-all;}
+    .upload{border:1px dashed #cbd5e1;border-radius:0.75rem;padding:14px;text-align:center;color:#64748b;font-size:12px;background:#f8fafc;}
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="phone-screen">
+        <div class="status-bar"><span>9:41</span><span style="display:flex;gap:6px;"><i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-full"></i></span></div>
+        <div class="nav-bar">
+          <a href="wecom_维修计划_列表.html" class="text-slate-700" onclick="sessionStorage.removeItem('ems_wecom_selected_fault')"><i class="fa-solid fa-chevron-left"></i></a>
+          <div class="text-sm font-semibold text-slate-900">维修计划</div>
+          <span class="w-4"></span>
+        </div>
+        <div class="content">
+
+          <!-- 设备信息（对齐 PC） -->
+          <div class="card mb-3 p-4">
+            <div class="sec-title">
+              <h3>设备信息</h3>
+              <a href="wecom_选取故障设备.html?from=plan" class="text-xs font-medium text-teal-700">选择故障设备</a>
+            </div>
+            <div id="faultEmpty" class="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-center text-xs text-slate-400">请选择故障设备</div>
+            <div id="faultInfo" class="hidden space-y-2">
+              <div class="grid grid-cols-2 gap-2">
+                <div class="cell"><div class="k">运营设备编号</div><div class="v" id="eqCode">-</div></div>
+                <div class="cell"><div class="k">运营设备名称</div><div class="v" id="eqName">-</div></div>
+                <div class="cell"><div class="k">规格型号</div><div class="v" id="eqSpec">-</div></div>
+                <div class="cell"><div class="k">使用位置</div><div class="v" id="eqLoc">-</div></div>
+                <div class="cell"><div class="k">故障单号</div><div class="v" id="fNo">-</div></div>
+                <div class="cell"><div class="k">故障类型</div><div class="v" id="fType">-</div></div>
+                <div class="cell"><div class="k">严重等级</div><div class="v" id="fLevel">-</div></div>
+                <div class="cell"><div class="k">故障发生时间</div><div class="v" id="fHappen">-</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 计划信息（对齐 PC） -->
+          <div class="card mb-3 p-4">
+            <div class="sec-title"><h3>计划信息</h3></div>
+
+            <div class="mb-3">
+              <label class="label req">维修计划单号</label>
+              <input class="input" disabled value="系统生成" />
+            </div>
+
+            <div class="mb-3">
+              <label class="label req">计划维修时间</label>
+              <div class="space-y-2">
+                <input id="tStart" class="input" type="datetime-local" value="2025-08-09T09:00" />
+                <input id="tEnd" class="input" type="datetime-local" value="2025-08-09T17:00" />
+              </div>
+              <p class="mt-1 text-xs text-slate-400">请选择时间范围</p>
+            </div>
+
+            <div class="mb-3">
+              <label class="label req">通知人员</label>
+              <select id="notifyPerson" class="select">
+                <option value="">请选择</option>
+                <option>设备主管</option>
+                <option>维保班长</option>
+                <option>武穴管理员</option>
+                <option>张倩</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="label req">计划维修人员</label>
+              <input id="persons" class="input" placeholder="请输入" />
+            </div>
+
+            <div class="mb-3">
+              <label class="label">故障分析概述</label>
+              <textarea id="analysis" class="input" rows="4" placeholder="请输入"></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label class="label">故障分析文档</label>
+              <button type="button" class="upload w-full" onclick="toast('已上传故障分析文档（原型）')">
+                <i class="fa-solid fa-cloud-arrow-up mb-1 text-base text-slate-400"></i><br/>上传文件
+                <div class="mt-1 text-[11px] text-slate-400">支持 .png，单个文件不能超过 500KB</div>
+              </button>
+            </div>
+
+            <div class="mb-3">
+              <label class="label">维修方案概述</label>
+              <textarea id="scheme" class="input" rows="4" placeholder="请输入"></textarea>
+            </div>
+
+            <div>
+              <label class="label">维修方案文档</label>
+              <button type="button" class="upload w-full" onclick="toast('已上传维修方案文档（原型）')">
+                <i class="fa-solid fa-cloud-arrow-up mb-1 text-base text-slate-400"></i><br/>上传文件
+                <div class="mt-1 text-[11px] text-slate-400">支持 .png，单个文件不能超过 500KB</div>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pb-2">
+            <a href="wecom_维修计划_列表.html" class="btn flex items-center justify-center border border-slate-200 bg-white py-3 text-sm text-slate-700" onclick="sessionStorage.removeItem('ems_wecom_selected_fault')">取消</a>
+            <button type="button" class="btn bg-teal-700 py-3 text-sm text-white" onclick="submitForm()">确定</button>
+          </div>
+
+        </div>
+        <div class="home-bar"><span></span></div>
+        <div id="toast" class="toast"></div>
+      </div>
+    </div>
+    <p class="hint">企微 H5 演示外壳（iPhone 16 · 390×844）· 无独立底部业务 Tab</p>
+  </div>
+  <script>
+    function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('show');clearTimeout(window.t);window.t=setTimeout(()=>el.classList.remove('show'),2000);}
+
+    function fill(f){
+      if(!f){
+        document.getElementById('faultEmpty').classList.remove('hidden');
+        document.getElementById('faultInfo').classList.add('hidden');
+        return;
+      }
+      document.getElementById('faultEmpty').classList.add('hidden');
+      document.getElementById('faultInfo').classList.remove('hidden');
+      document.getElementById('eqCode').textContent = f.code || '-';
+      document.getElementById('eqName').textContent = f.name || '-';
+      document.getElementById('eqSpec').textContent = f.spec || '-';
+      document.getElementById('eqLoc').textContent = f.loc || '-';
+      document.getElementById('fNo').textContent = f.no || '-';
+      document.getElementById('fType').textContent = f.type || '-';
+      document.getElementById('fLevel').textContent = f.level || '-';
+      document.getElementById('fHappen').textContent = f.happen || '-';
+    }
+
+    function submitForm(){
+      var fNo = document.getElementById('fNo').textContent;
+      if(!fNo || fNo === '-'){ toast('请选择故障设备'); return; }
+      if(!document.getElementById('tStart').value || !document.getElementById('tEnd').value){ toast('请选择计划维修时间'); return; }
+      if(document.getElementById('tStart').value >= document.getElementById('tEnd').value){ toast('结束时间须晚于开始时间'); return; }
+      if(!document.getElementById('notifyPerson').value){ toast('请选择通知人员'); return; }
+      if(!document.getElementById('persons').value.trim()){ toast('请输入计划维修人员'); return; }
+      toast('已确定（进入平台审批）');
+      sessionStorage.removeItem('ems_wecom_selected_fault');
+      setTimeout(function(){ location.href = 'wecom_维修计划_列表.html'; }, 600);
+    }
+
+    var faultQ = new URLSearchParams(location.search).get('fault');
+    try{
+      var f = JSON.parse(sessionStorage.getItem('ems_wecom_selected_fault') || 'null');
+      if(!f && faultQ){
+        f = {no:faultQ, code:'W-447744', name:'门机', spec:'1345', loc:'泊位2', type:'运行故障', level:'严重', happen:'2025-05-05 12:00'};
+        sessionStorage.setItem('ems_wecom_selected_fault', JSON.stringify(f));
+      }
+      fill(f);
+    }catch(e){ fill(null); }
+  </script>
+</body>
+</html>

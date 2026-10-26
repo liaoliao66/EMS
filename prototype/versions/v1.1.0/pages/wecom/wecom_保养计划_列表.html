@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>保养计划 · 企微H5 · EMS v1.1.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+      line-height:1.6; margin:0; min-height:100vh;
+      background:linear-gradient(160deg,#e2e8f0 0%,#f8fafc 45%,#cbd5e1 100%);
+    }
+    .stage{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;}
+    .phone{
+      width:390px; height:844px; border-radius:48px; border:10px solid #e5e7eb;
+      background:#0f172a; box-shadow:0 24px 64px rgba(15,23,42,.22);
+      position:relative; overflow:hidden; flex-shrink:0;
+    }
+    .island{
+      position:absolute; top:12px; left:50%; transform:translateX(-50%);
+      width:120px; height:32px; border-radius:20px; background:#0f172a; z-index:30;
+    }
+    .phone-screen{
+      position:absolute; inset:0; margin:8px; border-radius:40px; overflow:hidden;
+      background:#f8fafc; display:flex; flex-direction:column;
+    }
+    .status-bar{
+      height:48px; padding:14px 20px 0; display:flex; justify-content:space-between;
+      align-items:flex-start; font-size:12px; font-weight:600; color:#0f172a; flex-shrink:0;
+    }
+    .nav-bar{
+      height:48px; display:flex; align-items:center; justify-content:space-between;
+      padding:0 16px; background:#fff; border-bottom:1px solid #e2e8f0; flex-shrink:0;
+    }
+    .content{flex:1; overflow-y:auto; padding:16px; -webkit-overflow-scrolling:touch;}
+    .content::-webkit-scrollbar{display:none;}
+    .home-bar{
+      height:22px; display:flex; align-items:center; justify-content:center;
+      background:#fff; flex-shrink:0;
+    }
+    .home-bar span{width:128px; height:5px; border-radius:999px; background:#cbd5e1;}
+    .btn{border-radius:1rem;}
+    .btn:active{transform:scale(0.95);}
+    .card{background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;box-shadow:0 4px 12px rgba(0,0,0,0.05);}
+    .input,.select,textarea.input{
+      width:100%; border:1px solid #e2e8f0; border-radius:0.75rem; padding:0.625rem 0.75rem;
+      font-size:0.875rem; background:#fff; color:#0f172a; outline:none; box-sizing:border-box;
+    }
+    .input:focus,.select:focus{border-color:#0f766e;}
+    .label{display:block; margin-bottom:0.25rem; font-size:0.75rem; color:#64748b;}
+    .toast{
+      position:absolute; left:50%; bottom:36px; transform:translateX(-50%) translateY(8px);
+      background:#0f172a;color:#fff;padding:10px 14px;border-radius:14px;font-size:13px;
+      opacity:0;transition:.2s;z-index:50; max-width:86%;
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .modal-mask{
+      position:absolute; inset:0; background:rgba(15,23,42,.45);
+      display:none; align-items:center; justify-content:center; padding:20px; z-index:40;
+    }
+    .modal-mask.show{display:flex;}
+    .modal-box{
+      width:100%; max-height:78%; overflow:auto; background:#fff; border-radius:1.5rem;
+      padding:16px; box-shadow:0 8px 24px rgba(0,0,0,0.08);
+    }
+    .hint{margin-top:14px; font-size:12px; color:#64748b; text-align:center;}
+    .chip{border-radius:999px;border:1px solid #e2e8f0;background:#fff;color:#475569;padding:6px 12px;font-size:12px;font-weight:500;white-space:nowrap;}
+    .chip.active{background:#0f172a;color:#fff;border-color:#0f172a;}
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone" aria-label="手机预览外壳">
+      <div class="island"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span style="display:flex;gap:6px;align-items:center;">
+            <i class="fa-solid fa-signal"></i>
+            <i class="fa-solid fa-wifi"></i>
+            <i class="fa-solid fa-battery-full"></i>
+          </span>
+        </div>
+        <div class="nav-bar">
+          <a href="wecom_入口.html" class="text-slate-700"><i class="fa-solid fa-chevron-left"></i></a>
+          <div class="text-sm font-semibold text-slate-900">保养计划</div>
+          <button type="button" class="text-sm text-teal-700" onclick="openModal('mAdd')">新增</button>
+        </div>
+        <div class="content">
+          <div id="planChips" class="mb-3 flex gap-2 overflow-x-auto pb-1">
+            <button type="button" class="chip active">全部</button>
+            <button type="button" class="chip">草稿</button>
+            <button type="button" class="chip">审核中</button>
+            <button type="button" class="chip">已通过</button>
+          </div>
+          <div class="space-y-3">
+            <a href="wecom_保养计划_详情.html?type=周期保养" class="card block p-4">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <div class="text-sm font-medium text-slate-900">BJ-2026-021 · 1号门吊</div>
+                  <div class="mt-1 text-xs text-slate-500">周期保养 · 2026-08-10 09:00 至 2026-08-10 12:00</div>
+                </div>
+                <span class="shrink-0 rounded-full px-2 py-0.5 text-xs bg-emerald-50 text-emerald-700">已通过</span>
+              </div>
+            </a>
+            <div class="card p-4">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <div class="text-sm font-medium text-slate-900">BJ-2026-028 · 2号输送线</div>
+                  <div class="mt-1 text-xs text-slate-500">专项保养 · 2026-08-15 14:00 至 2026-08-15 17:00</div>
+                </div>
+                <span class="shrink-0 rounded-full px-2 py-0.5 text-xs bg-slate-100 text-slate-600">草稿</span>
+              </div>
+              <div class="mt-3 flex flex-wrap gap-3 text-xs text-teal-700">
+                <a href="wecom_保养计划_新增.html?type=专项保养">编辑</a>
+                <button type="button" onclick="toast('已提交，进入平台审批')">提交</button>
+                <button type="button" onclick="toast('已删除（原型）')">删除</button>
+              </div>
+            </div>
+            <a href="wecom_保养计划_详情.html?type=专项保养" class="card block p-4">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <div class="text-sm font-medium text-slate-900">BJ-2026-030 · 门机</div>
+                  <div class="mt-1 text-xs text-slate-500">专项保养 · 2026-08-18 09:00 至 2026-08-19 17:00</div>
+                </div>
+                <span class="shrink-0 rounded-full px-2 py-0.5 text-xs bg-amber-50 text-amber-700">审核中</span>
+              </div>
+            </a>
+          </div>
+
+          <div id="mAdd" class="modal-mask" onclick="if(event.target===this)closeModal('mAdd')">
+            <div class="modal-box">
+              <div class="mb-3 flex items-center justify-between">
+                <div class="text-sm font-semibold">选择保养类型</div>
+                <button type="button" onclick="closeModal('mAdd')"><i class="fa-solid fa-xmark text-slate-400"></i></button>
+              </div>
+              <a href="wecom_保养计划_新增.html?type=周期保养" class="card mb-2 block p-4 active:scale-95">
+                <div class="text-sm font-medium text-slate-900">周期保养</div>
+                <div class="mt-1 text-xs text-slate-500">按保养周期（天）制定计划，含上次保养、项目与手册</div>
+              </a>
+              <a href="wecom_保养计划_新增.html?type=专项保养" class="card block p-4 active:scale-95">
+                <div class="text-sm font-medium text-slate-900">专项保养</div>
+                <div class="mt-1 text-xs text-slate-500">需选择专项项目（如液压系统），再填写计划信息</div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="home-bar"><span></span></div>
+        <div id="toast" class="toast"></div>
+      </div>
+    </div>
+    <p class="hint">企微 H5 演示外壳（iPhone 16 · 390×844）· 无独立底部业务 Tab</p>
+  </div>
+  <script>
+    function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('show');clearTimeout(window.t);window.t=setTimeout(()=>el.classList.remove('show'),2000);}
+    function openModal(id){document.getElementById(id).classList.add('show');}
+    function closeModal(id){document.getElementById(id).classList.remove('show');}
+    function bindChips(rootId){
+      const root=document.getElementById(rootId); if(!root) return;
+      root.querySelectorAll('.chip').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          root.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+          btn.classList.add('active');
+          toast('已筛选：'+btn.textContent.trim());
+        });
+      });
+    }
+    bindChips('planChips');
+  </script>
+</body>
+</html>

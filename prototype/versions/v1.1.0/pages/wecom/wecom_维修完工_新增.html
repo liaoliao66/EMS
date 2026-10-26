@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>维修完工 · 企微H5 · EMS v1.1.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",sans-serif;line-height:1.6;margin:0;min-height:100vh;background:linear-gradient(160deg,#e2e8f0 0%,#f8fafc 45%,#cbd5e1 100%);}
+    .stage{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;}
+    .phone{width:390px;height:844px;border-radius:48px;border:10px solid #e5e7eb;background:#0f172a;box-shadow:0 24px 64px rgba(15,23,42,.22);position:relative;overflow:hidden;flex-shrink:0;}
+    .island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:32px;border-radius:20px;background:#0f172a;z-index:30;}
+    .phone-screen{position:absolute;inset:0;margin:8px;border-radius:40px;overflow:hidden;background:#f8fafc;display:flex;flex-direction:column;}
+    .status-bar{height:48px;padding:14px 20px 0;display:flex;justify-content:space-between;align-items:flex-start;font-size:12px;font-weight:600;color:#0f172a;flex-shrink:0;}
+    .nav-bar{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:#fff;border-bottom:1px solid #e2e8f0;flex-shrink:0;}
+    .content{flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch;}
+    .content::-webkit-scrollbar{display:none;}
+    .home-bar{height:22px;display:flex;align-items:center;justify-content:center;background:#fff;flex-shrink:0;}
+    .home-bar span{width:128px;height:5px;border-radius:999px;background:#cbd5e1;}
+    .btn{border-radius:1rem;} .btn:active{transform:scale(0.95);}
+    .card{background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;box-shadow:0 4px 12px rgba(0,0,0,0.05);}
+    .input,.select,textarea.input{width:100%;border:1px solid #e2e8f0;border-radius:0.75rem;padding:0.625rem 0.75rem;font-size:0.875rem;background:#fff;outline:none;box-sizing:border-box;}
+    .input:focus,.select:focus,textarea.input:focus{border-color:#0f766e;}
+    .input[readonly],.input:disabled{background:#f8fafc;color:#334155;}
+    .label{display:block;margin-bottom:0.25rem;font-size:0.75rem;color:#64748b;}
+    .req::after{content:"*";color:#e11d48;margin-left:2px;}
+    .sec-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-left:8px;border-left:3px solid #0f766e;}
+    .sec-title h3{font-size:14px;font-weight:600;color:#0f172a;margin:0;}
+    .toast{position:absolute;left:50%;bottom:36px;transform:translateX(-50%) translateY(8px);background:#0f172a;color:#fff;padding:10px 14px;border-radius:14px;font-size:13px;opacity:0;transition:.2s;z-index:50;max-width:86%;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .modal-mask{position:absolute;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:40;}
+    .modal-mask.show{display:flex;}
+    .modal-box{width:100%;max-height:82%;overflow:auto;background:#fff;border-radius:1.5rem;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,0.08);}
+    .hint{margin-top:14px;font-size:12px;color:#64748b;text-align:center;}
+    .cell{border:1px solid #e2e8f0;border-radius:0.75rem;padding:10px;background:#f8fafc;}
+    .cell .k{font-size:11px;color:#64748b;} .cell .v{font-size:13px;color:#0f172a;margin-top:2px;word-break:break-all;}
+    .row{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:6px 0;}
+    .row .k{color:#64748b;flex-shrink:0;} .row .v{color:#0f172a;text-align:right;}
+    .upload{border:1px dashed #cbd5e1;border-radius:0.75rem;padding:14px;text-align:center;color:#64748b;font-size:12px;background:#f8fafc;}
+    .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}
+    .photo-slot{aspect-ratio:1;border:1px dashed #cbd5e1;border-radius:0.75rem;background:#f8fafc;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:12px;}
+    .photo-slot.has{border-style:solid;background:#ecfdf5;color:#0f766e;}
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="phone-screen">
+        <div class="status-bar"><span>9:41</span><span style="display:flex;gap:6px;"><i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-full"></i></span></div>
+        <div class="nav-bar">
+          <a href="wecom_维修完工_列表.html" class="text-slate-700" onclick="clearDraft()"><i class="fa-solid fa-chevron-left"></i></a>
+          <div class="text-sm font-semibold text-slate-900">维修完工</div>
+          <span class="w-4"></span>
+        </div>
+        <div class="content">
+
+          <!-- 设备信息 -->
+          <div class="card mb-3 p-4">
+            <div class="sec-title">
+              <h3>设备信息</h3>
+              <a href="wecom_选取故障设备.html?from=finish" class="text-xs font-medium text-teal-700">选择故障设备</a>
+            </div>
+            <div id="faultEmpty" class="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-center text-xs text-slate-400">请选择故障设备</div>
+            <div id="faultInfo" class="hidden grid grid-cols-2 gap-2">
+              <div class="cell"><div class="k">运营设备编号</div><div class="v" id="eqCode">-</div></div>
+              <div class="cell"><div class="k">运营设备名称</div><div class="v" id="eqName">-</div></div>
+              <div class="cell"><div class="k">规格型号</div><div class="v" id="eqSpec">-</div></div>
+              <div class="cell"><div class="k">使用位置</div><div class="v" id="eqLoc">-</div></div>
+              <div class="cell"><div class="k">故障单号</div><div class="v" id="fNo">-</div></div>
+              <div class="cell"><div class="k">故障类型</div><div class="v" id="fType">-</div></div>
+              <div class="cell"><div class="k">严重等级</div><div class="v" id="fLevel">-</div></div>
+              <div class="cell"><div class="k">故障发生时间</div><div class="v" id="fHappen">-</div></div>
+            </div>
+            <p class="mt-2 text-[11px] text-slate-400">选取后自动带出关联计划/派工；未派工的计划不带出；更换设备将重置下方数据。</p>
+          </div>
+
+          <!-- 关联计划 / 派工 -->
+          <div class="card mb-3 p-4">
+            <div class="sec-title"><h3>计划 / 派工记录</h3></div>
+            <div id="relEmpty" class="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-6 text-center text-xs text-slate-400">暂无数据</div>
+            <div id="relList" class="space-y-2"></div>
+          </div>
+
+          <!-- 完工验收 -->
+          <div class="card mb-3 p-4">
+            <div class="sec-title"><h3>完工验收</h3></div>
+
+            <div class="mb-3">
+              <label class="label req">完工验收单号</label>
+              <input class="input" disabled value="系统生成" />
+            </div>
+
+            <div class="mb-3">
+              <label class="label req">完工验收日期</label>
+              <input id="acceptAt" class="input" type="datetime-local" value="2025-08-10T12:00" />
+              <p class="mt-1 text-xs text-slate-400">请选择时间；须晚于最后一次派工时间</p>
+            </div>
+
+            <div class="mb-3">
+              <label class="label">通知人员</label>
+              <select id="notifyPerson" class="select">
+                <option value="">请选择</option>
+                <option>设备主管</option>
+                <option>维保班长</option>
+                <option>武穴管理员</option>
+                <option>张倩</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="label req">验收人员</label>
+              <select id="acceptor" class="select">
+                <option value="">请选择</option>
+                <option>张飞</option>
+                <option>王工</option>
+                <option>赵工</option>
+                <option>李工</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="label req">验收内容</label>
+              <textarea id="acceptContent" class="input" rows="4" placeholder="请输入"></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label class="label">相关文档</label>
+              <button type="button" class="upload w-full" onclick="toast('已上传相关文档（原型）')">
+                <i class="fa-solid fa-cloud-arrow-up mb-1 text-base text-slate-400"></i><br/>上传文件
+                <div class="mt-1 text-[11px] text-slate-400">支持 .rar .zip .doc .docx .pdf，单个文件不能超过 500MB</div>
+              </button>
+            </div>
+
+            <div>
+              <label class="label">现场照片</label>
+              <div class="photo-grid" id="photoGrid">
+                <button type="button" class="photo-slot" onclick="addPhoto()"><i class="fa-solid fa-plus"></i></button>
+              </div>
+              <p class="mt-2 text-[11px] text-slate-400">支持 JPG、PNG，最多支持 30 张，最大支持 500MB</p>
+              <div class="mt-2 flex gap-2">
+                <button type="button" class="btn flex-1 border border-slate-200 py-2 text-xs text-slate-600" onclick="addPhoto()">上传图片</button>
+                <button type="button" class="btn flex-1 border border-slate-200 py-2 text-xs text-slate-600" onclick="addPhoto()">选择图片</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pb-2">
+            <a href="wecom_维修完工_列表.html" class="btn flex items-center justify-center border border-slate-200 bg-white py-3 text-sm text-slate-700" onclick="clearDraft()">取消</a>
+            <button type="button" class="btn bg-teal-700 py-3 text-sm text-white" onclick="submitForm()">确定</button>
+          </div>
+
+          <!-- 计划详情弹窗 -->
+          <div id="mPlan" class="modal-mask" onclick="if(event.target===this)closeModal('mPlan')">
+            <div class="modal-box">
+              <div class="mb-3 flex items-center justify-between">
+                <div class="text-sm font-semibold">维修计划</div>
+                <button type="button" onclick="closeModal('mPlan')"><i class="fa-solid fa-xmark text-slate-400"></i></button>
+              </div>
+              <div id="planModalBody" class="space-y-2 text-sm"></div>
+              <button type="button" class="btn mt-4 w-full bg-teal-700 py-3 text-sm text-white" onclick="closeModal('mPlan')">关闭</button>
+            </div>
+          </div>
+
+          <!-- 派工详情弹窗 -->
+          <div id="mDispatch" class="modal-mask" onclick="if(event.target===this)closeModal('mDispatch')">
+            <div class="modal-box">
+              <div class="mb-3 flex items-center justify-between">
+                <div class="text-sm font-semibold">派工记录</div>
+                <button type="button" onclick="closeModal('mDispatch')"><i class="fa-solid fa-xmark text-slate-400"></i></button>
+              </div>
+              <div id="dispatchModalBody" class="space-y-2 text-sm"></div>
+              <button type="button" class="btn mt-4 w-full bg-teal-700 py-3 text-sm text-white" onclick="closeModal('mDispatch')">关闭</button>
+            </div>
+          </div>
+
+        </div>
+        <div class="home-bar"><span></span></div>
+        <div id="toast" class="toast"></div>
+      </div>
+    </div>
+    <p class="hint">企微 H5 演示外壳（iPhone 16 · 390×844）· 无独立底部业务 Tab</p>
+  </div>
+  <script>
+    function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('show');clearTimeout(window.t);window.t=setTimeout(()=>el.classList.remove('show'),2000);}
+    function openModal(id){document.getElementById(id).classList.add('show');}
+    function closeModal(id){document.getElementById(id).classList.remove('show');}
+    function clearDraft(){ sessionStorage.removeItem('ems_wecom_selected_fault'); }
+
+    var fault=null, relations=[], photos=0, lastDispatchEnd='';
+
+    // 按故障单号模拟带出：仅已派工的计划
+    var REL_MAP = {
+      '4654561': [
+        {planNo:'090888', planTime:'2025-08-09 12:00 至 2025-08-09 12:00', planPerson:'张飞', dispatchNo:'4456465', repairTime:'2025-08-09 12:00 至 2025-08-09 12:00', repairPerson:'张飞', overview:'334'},
+        {planNo:'090888', planTime:'2025-08-09 12:00 至 2025-08-09 12:00', planPerson:'张飞', dispatchNo:'4456466', repairTime:'2025-08-09 14:00 至 2025-08-09 16:00', repairPerson:'张飞', overview:'轴承更换复检'}
+      ],
+      '55456541': [
+        {planNo:'4456465', planTime:'2034-09-09 12:00 至 2034-09-09 12:00', planPerson:'张飞', dispatchNo:'4456465', repairTime:'2034-09-09 12:00 至 2034-09-09 12:00', repairPerson:'张飞', overview:'334'}
+      ]
+    };
+
+    function fillFault(f){
+      fault=f;
+      if(!f){
+        document.getElementById('faultEmpty').classList.remove('hidden');
+        document.getElementById('faultInfo').classList.add('hidden');
+        relations=[]; renderRelations();
+        return;
+      }
+      document.getElementById('faultEmpty').classList.add('hidden');
+      document.getElementById('faultInfo').classList.remove('hidden');
+      document.getElementById('eqCode').textContent=f.code||'-';
+      document.getElementById('eqName').textContent=f.name||'-';
+      document.getElementById('eqSpec').textContent=f.spec||'-';
+      document.getElementById('eqLoc').textContent=f.loc||'-';
+      document.getElementById('fNo').textContent=f.no||'-';
+      document.getElementById('fType').textContent=f.type||'-';
+      document.getElementById('fLevel').textContent=f.level||'-';
+      document.getElementById('fHappen').textContent=f.happen||'-';
+      relations = (REL_MAP[f.no] || []).slice();
+      renderRelations();
+    }
+
+    function renderRelations(){
+      var empty=document.getElementById('relEmpty');
+      var box=document.getElementById('relList');
+      lastDispatchEnd='';
+      if(!relations.length){
+        empty.classList.remove('hidden');
+        box.innerHTML='';
+        return;
+      }
+      empty.classList.add('hidden');
+      box.innerHTML = relations.map(function(r, i){
+        // 取末次派工结束时间做校验提示
+        lastDispatchEnd = r.repairTime.split('至').pop().trim().replace(/：/g,':');
+        return '<div class="rounded-xl border border-slate-200 p-3">'
+          + '<div class="text-xs font-medium text-slate-900">#'+(i+1)+' · 计划 '+r.planNo+' · 派工 '+r.dispatchNo+'</div>'
+          + '<div class="mt-1 text-[11px] text-slate-500">计划时间 '+r.planTime+'</div>'
+          + '<div class="text-[11px] text-slate-500">计划人员 '+r.planPerson+' · 维修人员 '+r.repairPerson+'</div>'
+          + '<div class="text-[11px] text-slate-500">维修时间 '+r.repairTime+'</div>'
+          + '<div class="text-[11px] text-slate-500">概述：'+r.overview+'</div>'
+          + '<div class="mt-2 flex gap-3 text-xs text-teal-700">'
+          + '<button type="button" onclick="viewPlan('+i+')">计划</button>'
+          + '<button type="button" onclick="viewDispatch('+i+')">派工</button>'
+          + '</div></div>';
+      }).join('');
+    }
+
+    function viewPlan(i){
+      var r=relations[i];
+      document.getElementById('planModalBody').innerHTML =
+        '<div class="row"><span class="k">维修计划单号</span><span class="v">'+r.planNo+'</span></div>'
+        +'<div class="row"><span class="k">维修计划时间</span><span class="v text-xs">'+r.planTime+'</span></div>'
+        +'<div class="row"><span class="k">计划维修人员</span><span class="v">'+r.planPerson+'</span></div>';
+      openModal('mPlan');
+    }
+
+    function viewDispatch(i){
+      var r=relations[i];
+      document.getElementById('dispatchModalBody').innerHTML =
+        '<div class="row"><span class="k">派工单号</span><span class="v">'+r.dispatchNo+'</span></div>'
+        +'<div class="row"><span class="k">维修时间</span><span class="v text-xs">'+r.repairTime+'</span></div>'
+        +'<div class="row"><span class="k">维修人员</span><span class="v">'+r.repairPerson+'</span></div>'
+        +'<div class="pt-2"><div class="text-xs text-slate-500 mb-1">维修概述</div><div class="rounded-xl bg-slate-50 px-3 py-2 text-slate-700">'+r.overview+'</div></div>';
+      openModal('mDispatch');
+    }
+
+    function addPhoto(){
+      if(photos>=30){ toast('最多支持 30 张'); return; }
+      photos++;
+      var grid=document.getElementById('photoGrid');
+      var slot=document.createElement('div');
+      slot.className='photo-slot has';
+      slot.innerHTML='<i class="fa-solid fa-image"></i>';
+      grid.insertBefore(slot, grid.lastElementChild);
+      toast('已添加现场照片（原型）· '+photos+'/30');
+    }
+
+    function submitForm(){
+      if(!fault){ toast('请选择故障设备'); return; }
+      if(!relations.length){ toast('该故障暂无已派工记录，无法完工'); return; }
+      if(!document.getElementById('acceptAt').value){ toast('请选择完工验收日期'); return; }
+      // 简单字符串比较：验收时间须晚于末次派工结束
+      var accept = document.getElementById('acceptAt').value.replace('T',' ');
+      if(lastDispatchEnd && accept <= lastDispatchEnd.replace(/(\d{2}:\d{2})$/,'$1')){
+        // 宽松校验提示（原型）
+        if(accept.slice(0,16) <= lastDispatchEnd.slice(0,16)){
+          toast('验收日期须晚于最后一次派工时间'); return;
+        }
+      }
+      if(!document.getElementById('acceptor').value){ toast('请选择验收人员'); return; }
+      if(!document.getElementById('acceptContent').value.trim()){ toast('请填写验收内容'); return; }
+      toast('已确定（进入平台审批）');
+      clearDraft();
+      setTimeout(function(){ location.href='wecom_维修完工_列表.html'; }, 700);
+    }
+
+    try{ fillFault(JSON.parse(sessionStorage.getItem('ems_wecom_selected_fault')||'null')); }catch(e){ fillFault(null); }
+  </script>
+</body>
+</html>
