@@ -110,7 +110,9 @@
         +'<div class="meta">维修人员 '+d.person+' · 计划单 '+d.plan+'</div>'
         +'<div class="meta">'+d.code+' · '+d.spec+' · '+d.loc+'</div>'
         +'<div class="meta mt-0.5">概述：'+d.overview+'</div>'
-        +'<div class="mt-3 flex flex-wrap gap-3 text-xs text-teal-700"><button type="button" onclick="toast(\'详情（原型）\')">查看</button><button type="button" onclick="toast(\'已删除（原型）\')">删除</button></div>'
+        +'<div class="mt-3 flex flex-wrap gap-3 text-xs text-teal-700">'
+        +'<a href="wecom_维修派工_详情.html?no='+encodeURIComponent(d.no)+'">查看</a>'
+        +'<button type="button" onclick="toast(\'已删除（原型）\')">删除</button></div>'
         +'</div>').join('');
     }
     function doSearch(){

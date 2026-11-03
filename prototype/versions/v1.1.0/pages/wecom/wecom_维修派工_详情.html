@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>维修派工详情 · 企微H5 · EMS v1.1.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",sans-serif;line-height:1.6;margin:0;min-height:100vh;background:linear-gradient(160deg,#e2e8f0 0%,#f8fafc 45%,#cbd5e1 100%);}
+    .stage{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;}
+    .phone{width:390px;height:844px;border-radius:48px;border:10px solid #e5e7eb;background:#0f172a;box-shadow:0 24px 64px rgba(15,23,42,.22);position:relative;overflow:hidden;flex-shrink:0;}
+    .island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:32px;border-radius:20px;background:#0f172a;z-index:30;}
+    .phone-screen{position:absolute;inset:0;margin:8px;border-radius:40px;overflow:hidden;background:#f8fafc;display:flex;flex-direction:column;}
+    .status-bar{height:48px;padding:14px 20px 0;display:flex;justify-content:space-between;align-items:flex-start;font-size:12px;font-weight:600;color:#0f172a;flex-shrink:0;}
+    .nav-bar{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:#fff;border-bottom:1px solid #e2e8f0;flex-shrink:0;}
+    .content{flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch;}
+    .content::-webkit-scrollbar{display:none;}
+    .home-bar{height:22px;display:flex;align-items:center;justify-content:center;background:#fff;flex-shrink:0;}
+    .home-bar span{width:128px;height:5px;border-radius:999px;background:#cbd5e1;}
+    .card{background:#fff;border:1px solid #e2e8f0;border-radius:1.25rem;box-shadow:0 4px 12px rgba(0,0,0,0.05);}
+    .sec-title{display:flex;align-items:center;margin-bottom:12px;padding-left:8px;border-left:3px solid #0f766e;}
+    .sec-title h3{font-size:14px;font-weight:600;color:#0f172a;margin:0;}
+    .cell{border:1px solid #e2e8f0;border-radius:0.75rem;padding:10px;background:#f8fafc;}
+    .cell .k{font-size:11px;color:#64748b;} .cell .v{font-size:13px;color:#0f172a;margin-top:2px;word-break:break-all;}
+    .row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:13px;}
+    .row:last-child{border-bottom:0;}
+    .row .k{color:#64748b;flex-shrink:0;} .row .v{color:#0f172a;text-align:right;}
+    .hint{margin-top:14px;font-size:12px;color:#64748b;text-align:center;}
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="phone-screen">
+        <div class="status-bar"><span>9:41</span><span style="display:flex;gap:6px;"><i class="fa-solid fa-signal"></i><i class="fa-solid fa-wifi"></i><i class="fa-solid fa-battery-full"></i></span></div>
+        <div class="nav-bar">
+          <a href="wecom_维修派工_列表.html" class="text-slate-700"><i class="fa-solid fa-chevron-left"></i></a>
+          <div class="text-sm font-semibold text-slate-900">维修派工详情</div>
+          <span class="w-4"></span>
+        </div>
+        <div class="content">
+
+          <div class="card mb-3 p-4">
+            <div class="sec-title"><h3>维修计划</h3></div>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="cell col-span-2"><div class="k">维修计划单号</div><div class="v" id="planNo">-</div></div>
+              <div class="cell col-span-2"><div class="k">维修计划时间</div><div class="v" id="planTime">-</div></div>
+              <div class="cell"><div class="k">运营设备编号</div><div class="v" id="eqCode">-</div></div>
+              <div class="cell"><div class="k">运营设备名称</div><div class="v" id="eqName">-</div></div>
+              <div class="cell"><div class="k">规格型号</div><div class="v" id="eqSpec">-</div></div>
+              <div class="cell"><div class="k">使用位置</div><div class="v" id="eqLoc">-</div></div>
+            </div>
+          </div>
+
+          <div class="card mb-3 p-4">
+            <div class="sec-title"><h3>维修记录</h3></div>
+            <div class="row"><span class="k">派工单号</span><span class="v" id="dispatchNo">-</span></div>
+            <div class="row"><span class="k">维修时间</span><span class="v text-xs" id="repairTime">-</span></div>
+            <div class="row"><span class="k">维修人员</span><span class="v" id="person">-</span></div>
+            <div class="pt-2">
+              <div class="text-xs text-slate-500 mb-1">维修概述</div>
+              <div id="overview" class="rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-700">-</div>
+            </div>
+            <div class="row mt-2"><span class="k">相关文档</span><span class="v text-teal-700" id="doc">维修记录.pdf</span></div>
+            <div class="row"><span class="k">现场照片</span><span class="v" id="photos">2 张</span></div>
+          </div>
+
+        </div>
+        <div class="home-bar"><span></span></div>
+      </div>
+    </div>
+    <p class="hint">企微 H5 演示外壳（iPhone 16 · 390×844）· 无独立底部业务 Tab</p>
+  </div>
+  <script>
+    var MAP = {
+      'WP-090888': {
+        no:'WP-090888', plan:'090888', planTime:'2025-08-09 12:00 至 2025-08-09 12:00',
+        code:'W-447744', name:'门机', spec:'1345', loc:'泊位2',
+        time:'2025-08-09 12:00 至 2025-08-09 17:00', person:'张飞',
+        overview:'更换驱动轴承并复核对中', doc:'轴承更换记录.pdf', photos:'3 张'
+      },
+      'WP-55456542': {
+        no:'WP-55456542', plan:'WJ-55456541', planTime:'2025-08-10 09:00 至 2025-08-10 17:00',
+        code:'W-447744', name:'门机', spec:'1345', loc:'泊位2',
+        time:'2025-08-10 09:00 至 2025-08-10 12:00', person:'王工',
+        overview:'限位开关检修', doc:'限位检修说明.pdf', photos:'2 张'
+      }
+    };
+    var d = MAP[new URLSearchParams(location.search).get('no')] || MAP['WP-090888'];
+    document.getElementById('planNo').textContent = d.plan;
+    document.getElementById('planTime').textContent = d.planTime;
+    document.getElementById('eqCode').textContent = d.code;
+    document.getElementById('eqName').textContent = d.name;
+    document.getElementById('eqSpec').textContent = d.spec;
+    document.getElementById('eqLoc').textContent = d.loc;
+    document.getElementById('dispatchNo').textContent = d.no;
+    document.getElementById('repairTime').textContent = d.time;
+    document.getElementById('person').textContent = d.person;
+    document.getElementById('overview').textContent = d.overview;
+    document.getElementById('doc').textContent = d.doc;
+    document.getElementById('photos').textContent = d.photos;
+  </script>
+</body>
+</html>
